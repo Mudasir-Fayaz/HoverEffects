@@ -1,0 +1,9 @@
+export { default as ButtonsIllustration } from "./ButtonsIllustration";
+export { default as CardsIllustration } from "./CardsIllustration";
+export { default as ImagesIllustration } from "./ImagesIllustration";
+export { default as LinksIllustration } from "./LinksIllustration";
+export { default as IconsIllustration } from "./IconsIllustration";
+export { default as NavigationIllustration } from "./NavigationIllustration";
+export { default as InputsIllustration } from "./InputsIllustration";
+export { default as BadgesIllustration } from "./BadgesIllustration";
+export { default as TooltipsIllustration } from "./TooltipsIllustration";
