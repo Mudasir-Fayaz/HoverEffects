@@ -12,6 +12,13 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // vinext / Cloudflare build output and local scratch dirs:
+    "dist/**",
+    ".vinext/**",
+    ".wrangler/**",
+    "buildlab/**",
+    "hoverlab/**",
+    "notes/**",
   ]),
 ]);
 

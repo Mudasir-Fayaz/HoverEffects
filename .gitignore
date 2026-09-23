@@ -16,7 +16,7 @@
 # next.js
 /.next/
 /out/
-
+/notes
 # production
 /build
 
@@ -32,10 +32,23 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+.dev.vars
+.dev.vars.*
 
 # vercel
 .vercel
 
+# hoverlab (local experiment files)
+/hoverlab
+/buildlab
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+/dist/
+.vinext/
+.wrangler/
+
+# real Cloudflare config (never commit; see wrangler.example.jsonc)
+wrangler.jsonc
+wrangler.json
