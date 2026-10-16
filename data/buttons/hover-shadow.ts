@@ -1,37 +1,32 @@
 import type { HoverEffect } from "../types";
+import { buttonShell } from "../base-effects-css";
+
+const ACCENT = "#1d4ed8";
+const ACCENT_ALT = "#60a5fa";
+
+const css = `${buttonShell(".btn-hover-shadow", ACCENT, ACCENT_ALT)}
+.btn-hover-shadow{background:var(--he-accent);color:#fff;border-radius:8px;box-shadow:0 0 0 transparent;transition:transform .22s cubic-bezier(.22,1,.36,1),box-shadow .22s ease}
+.btn-hover-shadow:hover,.btn-hover-shadow:focus-visible{transform:translate(-2px,-2px);box-shadow:5px 5px 0 #1e3a8a}`;
 
 export const hoverShadowButton: HoverEffect = {
   id: "btn-hover-shadow",
   title: "Hover Shadow",
   category: "buttons",
-  description: "A hard offset shadow appears beneath the button on hover for a lifted effect.",
-  tags: ["shadow", "offset", "lift"],
-  animationType: "transform",
+  description: "The blue button lifts diagonally over a crisp hard offset shadow.",
+  tags: ["shadow", "offset", "lift", "button"],
+  animationType: "shadow",
   complexity: "simple",
+  css,
   react: `export default function HoverShadowButton() {
   return (
-    <button className="px-8 py-3 font-semibold text-white bg-indigo-500 border-none cursor-pointer transition-all duration-250 hover:shadow-[5px_5px_0_#3730a3] hover:-translate-x-[2px] hover:-translate-y-[2px]">
-      Hover Me
-    </button>
+    <>
+      <style>{\`${css.replace(/`/g, "\\`")}\`}</style>
+      <button type="button" className="btn-hover-shadow">
+        Start the build
+      </button>
+    </>
   );
 }`,
-  html: `<button class="btn-hover-shadow">Hover Me</button>
-
-<style>
-.btn-hover-shadow {
-  padding: 14px 40px;
-  font-size: 15px;
-  font-weight: 600;
-  color: #fff;
-  background: #6366f1;
-  border: none;
-  cursor: pointer;
-  transition: box-shadow 0.25s ease, transform 0.25s ease;
-  box-shadow: 0 0 0 transparent;
-}
-.btn-hover-shadow:hover {
-  box-shadow: 5px 5px 0 #3730a3;
-  transform: translate(-2px, -2px);
-}
-</style>`,
+  html: `<style>${css}</style>
+<button type="button" class="btn-hover-shadow">Start the build</button>`,
 };

@@ -14,7 +14,13 @@ export interface GroupMeta {
 }
 
 export interface HoverEffect {
+  /** Permanent deep-link / bookmark key. Never change once published. */
   id: string;
+  /**
+   * Descriptive public name used for registry names, install URLs, and file
+   * targets. Falls back to `id` when omitted.
+   */
+  slug?: string;
   title: string;
   category: string;
   description?: string;

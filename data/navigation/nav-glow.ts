@@ -2,35 +2,39 @@ import type { HoverEffect } from "../types";
 
 export const navGlow: HoverEffect = {
   id: "nav-glow-item",
-  title: "Glow Item",
+  title: "Soft Tint",
   category: "navigation",
-  description: "Soft ambient glow highlights nav items on hover.",
-  tags: ["glow", "navigation", "ambient"],
-  animationType: "opacity",
+  description: "A quiet accent tint and a hairline inset ring settle behind the hovered item, with no glow spread.",
+  tags: ["tint", "ring", "navigation", "subtle"],
+  animationType: "color",
   complexity: "simple",
-  react: `export default function GlowItemNav() {
+  react: `export default function SoftTintNav() {
   return (
-    <nav className="flex gap-2">
+    <nav className="flex gap-1" aria-label="Demo navigation">
       {["Home", "About", "Contact"].map((link) => (
-        <a key={link} href="#"
-          className="text-slate-500 font-medium px-4 py-2 rounded-lg no-underline
-            transition-all duration-300
-            hover:text-indigo-500 hover:bg-indigo-500/8
-            hover:shadow-[0_0_15px_rgba(99,102,241,.15)]">
+        <a
+          key={link}
+          href="https://example.com"
+          className="rounded-md px-3 py-1.5 text-sm font-medium no-underline outline-none
+            text-slate-500 transition-all duration-300
+            hover:bg-indigo-500/8 hover:text-indigo-600 hover:ring-1 hover:ring-inset hover:ring-indigo-500/25
+            focus-visible:bg-indigo-500/8 focus-visible:text-indigo-600 focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-indigo-500/25"
+        >
           {link}
         </a>
       ))}
     </nav>
   );
 }`,
-  html: `<nav class="nav-glow">
-  <a href="#">Home</a>
-  <a href="#">About</a>
-  <a href="#">Contact</a>
+  html: `<nav class="nav-tint" aria-label="Demo navigation">
+  <a href="https://example.com">Home</a>
+  <a href="https://example.com">About</a>
+  <a href="https://example.com">Contact</a>
 </nav>
 <style>
-.nav-glow { display: flex; gap: 8px; }
-.nav-glow a { text-decoration: none; color: #64748b; font-weight: 500; padding: 8px 16px; border-radius: 8px; transition: all 0.3s ease; }
-.nav-glow a:hover { color: #6366f1; background: rgba(99,102,241,.08); box-shadow: 0 0 15px rgba(99,102,241,.15); }
+.nav-tint { display: flex; gap: 4px; }
+.nav-tint a { text-decoration: none; color: #64748b; font-weight: 500; font-size: 14px; padding: 6px 12px; border-radius: 6px; transition: color .24s ease, background-color .24s ease, box-shadow .24s ease; }
+.nav-tint a:hover, .nav-tint a:focus-visible { color: #4f46e5; background: rgba(79,70,229,.08); box-shadow: inset 0 0 0 1px rgba(79,70,229,.25); outline: none; }
+@media (prefers-reduced-motion: reduce) { .nav-tint a { transition: none; } }
 </style>`,
 };

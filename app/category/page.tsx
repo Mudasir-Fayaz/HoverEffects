@@ -5,7 +5,7 @@ import CategoryIndexContent from "@/components/category/CategoryIndexContent";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "All Categories — HoverEffects",
+  title: "All Categories",
   description:
     "Browse every HoverEffects category with curated previews from buttons, cards, inputs, tooltips, and more.",
   keywords: [

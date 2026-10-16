@@ -3,7 +3,9 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { getGroupBySlug, groups } from "@/data";
 import { getEffectsByCategory } from "@/lib/effects-data";
+import { pageCountFor, sliceForPage } from "@/lib/pagination";
 import CategoryPageContent from "@/components/category/CategoryPageContent";
+import CategoryPageSkeleton from "@/components/category/CategoryPageSkeleton";
 
 type Props = { params: Promise<{ slug: string }> };
 type PageProps = { params: Promise<{ slug: string }> };
@@ -21,13 +23,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!group) {
     return {
-      title: "Category Not Found — HoverEffects",
+      title: "Category Not Found",
       description: "The requested hover effects category does not exist.",
     };
   }
 
   return {
-    title: `${group.title} — HoverEffects`,
+    title: group.title,
     description: group.longDescription,
     keywords: group.keywords,
     openGraph: {
@@ -56,7 +58,9 @@ export default async function CategoryPage({ params }: PageProps) {
   }
 
   const siteUrl = "https://hovereffects.in";
-  const effects = getEffectsByCategory(slug);
+  const totalEffects = getEffectsByCategory(slug);
+  const totalPages = pageCountFor(totalEffects.length);
+  const effects = sliceForPage(totalEffects, 1);
   const itemListSchema = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
@@ -80,12 +84,26 @@ export default async function CategoryPage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
       />
-      <Suspense fallback={null}>
+      <Suspense
+        fallback={
+          <CategoryPageSkeleton
+            slug={slug}
+            title={group.title}
+            description={group.description}
+            count={effects.length}
+            page={1}
+            totalPages={totalPages}
+          />
+        }
+      >
         <CategoryPageContent
           slug={slug}
           title={group.title}
           description={group.description}
           effects={effects}
+          effectIds={totalEffects.map((effect) => effect.id)}
+          page={1}
+          totalPages={totalPages}
         />
       </Suspense>
     </>

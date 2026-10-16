@@ -1,61 +1,38 @@
 import type { HoverEffect } from "../types";
+import { buttonShell } from "../base-effects-css";
+
+const ACCENT = "#4d7c0f";
+const ACCENT_ALT = "#84cc16";
+
+const css = `${buttonShell(".btn-corner-curtain-fill", ACCENT, ACCENT_ALT)}
+.btn-corner-curtain-fill{background:var(--he-accent);color:#fff;border-radius:8px;overflow:hidden;transition:background-color .3s ease}
+.btn-corner-curtain-fill::before,.btn-corner-curtain-fill::after{content:"";position:absolute;top:0;bottom:0;width:52%;background:var(--he-accent-2);transition:transform .42s cubic-bezier(.22,1,.36,1)}
+.btn-corner-curtain-fill::before{left:0;transform:translateX(-101%)}
+.btn-corner-curtain-fill::after{right:0;transform:translateX(101%)}
+.btn-corner-curtain-fill:hover::before,.btn-corner-curtain-fill:focus-visible::before{transform:translateX(0)}
+.btn-corner-curtain-fill:hover::after,.btn-corner-curtain-fill:focus-visible::after{transform:translateX(0)}
+.btn-corner-curtain-fill:hover,.btn-corner-curtain-fill:focus-visible{background:#3f6212}
+.btn-corner-curtain-fill>*{position:relative;z-index:1}`;
 
 export const cornerCurtainFillButton: HoverEffect = {
   id: "btn-corner-curtain-fill",
   title: "Corner Curtain Fill",
   category: "buttons",
-  description: "Curtains close from the left and right corners to fill the button on hover.",
-  tags: ["curtain", "corner", "fill", "reveal"],
+  description: "Two lime curtains sweep in from the sides to fill the button.",
+  tags: ["curtain", "fill", "sides", "button"],
   animationType: "transform",
-  complexity: "medium",
+  complexity: "simple",
+  css,
   react: `export default function CornerCurtainFillButton() {
   return (
-    <button className="group relative px-8 py-3 font-semibold text-white bg-indigo-500 border-none cursor-pointer overflow-hidden z-0">
-      <span className="absolute inset-y-0 left-0 w-1/2 bg-indigo-600 -z-10 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] -translate-x-full group-hover:translate-x-0" />
-      <span className="absolute inset-y-0 right-0 w-1/2 bg-indigo-600 -z-10 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] translate-x-full group-hover:translate-x-0" />
-      Hover Me
-    </button>
+    <>
+      <style>{\`${css.replace(/`/g, "\\`")}\`}</style>
+      <button type="button" className="btn-corner-curtain-fill">
+        Save draft
+      </button>
+    </>
   );
 }`,
-  html: `<button class="btn-corner-curtain-fill">Curtain</button>
-
-<style>
-.btn-corner-curtain-fill {
-  position: relative;
-  padding: 14px 40px;
-  font-size: 15px;
-  font-weight: 600;
-  color: #fff;
-  background: #6366f1;
-  border: none;
-  cursor: pointer;
-  overflow: hidden;
-  z-index: 0;
-}
-.btn-corner-curtain-fill::before,
-.btn-corner-curtain-fill::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 51%;
-  background: #4f46e5;
-  z-index: -1;
-  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.btn-corner-curtain-fill::before {
-  left: 0;
-  transform: translateX(-100%);
-}
-.btn-corner-curtain-fill::after {
-  right: 0;
-  transform: translateX(100%);
-}
-.btn-corner-curtain-fill:hover::before {
-  transform: translateX(0);
-}
-.btn-corner-curtain-fill:hover::after {
-  transform: translateX(0);
-}
-</style>`,
+  html: `<style>${css}</style>
+<button type="button" class="btn-corner-curtain-fill">Save draft</button>`,
 };

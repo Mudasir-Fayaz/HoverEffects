@@ -1,41 +1,33 @@
 import type { HoverEffect } from "../types";
+import { buttonShell } from "../base-effects-css";
+
+const ACCENT = "#b45309";
+const ACCENT_ALT = "#f59e0b";
+
+const css = `${buttonShell(".btn-3d-depth", ACCENT, ACCENT_ALT)}
+.btn-3d-depth{background:var(--he-accent);color:#fff;border-radius:10px;box-shadow:0 6px 0 #92400e;transition:transform .12s ease,box-shadow .12s ease,background-color .2s ease}
+.btn-3d-depth:hover,.btn-3d-depth:focus-visible{transform:translateY(3px);box-shadow:0 3px 0 #92400e}
+.btn-3d-depth:hover,.btn-3d-depth:focus-visible{background:color-mix(in srgb,var(--he-accent) 92%,var(--he-accent-2))}`;
 
 export const depth3dButton: HoverEffect = {
   id: "btn-3d-depth",
-  title: "3D Depth",
+  title: "Depth 3D",
   category: "buttons",
-  description: "Button presses down into a layered bottom shadow on hover like a 3D keypress.",
-  tags: ["3d", "depth", "press", "shadow"],
+  description: "The amber button presses down onto its 3D ledge on hover.",
+  tags: ["3d", "depth", "press", "button"],
   animationType: "transform",
   complexity: "simple",
+  css,
   react: `export default function Depth3dButton() {
   return (
-    <button className="px-8 py-3 font-semibold text-white bg-indigo-500 border-none cursor-pointer transition-all duration-150 shadow-[0_6px_0_#4f46e5] hover:translate-y-[3px] hover:shadow-[0_3px_0_#4f46e5] active:translate-y-[6px] active:shadow-[0_0_0_#4f46e5]">
-      Hover Me
-    </button>
+    <>
+      <style>{\`${css.replace(/`/g, "\\`")}\`}</style>
+      <button type="button" className="btn-3d-depth">
+        Tap to continue
+      </button>
+    </>
   );
 }`,
-  html: `<button class="btn-3d-depth">Hover Me</button>
-
-<style>
-.btn-3d-depth {
-  padding: 14px 40px;
-  font-size: 15px;
-  font-weight: 600;
-  color: #fff;
-  background: #6366f1;
-  border: none;
-  cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
-  box-shadow: 0 6px 0 #4f46e5;
-}
-.btn-3d-depth:hover {
-  transform: translateY(3px);
-  box-shadow: 0 3px 0 #4f46e5;
-}
-.btn-3d-depth:active {
-  transform: translateY(6px);
-  box-shadow: 0 0 0 #4f46e5;
-}
-</style>`,
+  html: `<style>${css}</style>
+<button type="button" class="btn-3d-depth">Tap to continue</button>`,
 };

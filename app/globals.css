@@ -1,36 +1,300 @@
 @import "tailwindcss";
+@import "./appearance-presets.css";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/*
+ * Site shell design tokens.
+ *
+ * `--site-*` variables are owned by the website shell only. They are defined
+ * for every preset in appearance-presets.css (generated) and overridden inline
+ * for custom accents by the ThemeProvider. They must never be consumed by
+ * effect demos — demos author their own `--he-*` variables.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-.dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  --site-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  /* Back-compat aliases for older component references. */
+  --site-bg: var(--site-canvas);
+  --site-surface-muted: var(--site-surface-subtle);
+  --site-on-accent: var(--site-accent-foreground);
+  --background: var(--site-canvas);
+  --foreground: var(--site-text);
+  /* Static fallbacks for category art if the generated presets are absent. */
+  --site-art-bg: #f1f3fa;
+  --site-art-bg-strong: #dbe1f5;
+  --site-art-stroke: #4f46e5;
+  --site-art-accent: #4f46e5;
+  --site-art-accent-soft: #e0e7ff;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--site-canvas);
+  --color-foreground: var(--site-text);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--site-canvas);
+  color: var(--site-text);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
-html.no-transition,
-html.no-transition *,
-html.no-transition *::before,
-html.no-transition *::after {
+/*
+ * Transition suppression is scoped to the shell and explicitly excludes the
+ * effect preview boundary so switching appearance never freezes a demo.
+ */
+html.no-site-transition .site-shell :not(.effect-preview-root, .effect-preview-root *),
+html.no-site-transition .site-shell :not(.effect-preview-root, .effect-preview-root *)::before,
+html.no-site-transition .site-shell :not(.effect-preview-root, .effect-preview-root *)::after {
   transition: none !important;
   animation: none !important;
+}
+
+.site-shell {
+  min-height: 100dvh;
+  background: var(--site-canvas);
+  color: var(--site-text);
+}
+
+.site-popover {
+  border: 1px solid var(--site-border);
+  background: color-mix(in srgb, var(--site-surface-raised) 94%, transparent);
+  box-shadow: 0 18px 55px var(--site-shadow);
+  backdrop-filter: blur(18px);
+  transform-origin: top right;
+  animation: site-popover-in 160ms var(--site-ease-out);
+}
+
+@keyframes site-popover-in {
+  from { opacity: 0; transform: scale(0.97) translateY(-3px); }
+}
+
+.site-icon-button {
+  display: inline-grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  place-items: center;
+  color: var(--site-text-muted);
+  cursor: pointer;
+  transition: color 150ms ease, background-color 150ms ease, transform 150ms var(--site-ease-out);
+}
+
+.site-icon-button:hover {
+  color: var(--site-text);
+  background: var(--site-surface-subtle);
+}
+
+.site-icon-button:active,
+.site-choice:active,
+.site-swatch:active {
+  transform: scale(0.97);
+}
+
+.site-icon-button:focus-visible,
+.site-choice:focus-visible,
+.site-swatch:focus-visible {
+  outline: 3px solid var(--site-focus);
+  outline-offset: 2px;
+}
+
+.site-choice {
+  display: grid;
+  min-height: 3.25rem;
+  place-items: center;
+  gap: 0.2rem;
+  border: 1px solid var(--site-border);
+  color: var(--site-text-muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 150ms ease, border-color 150ms ease, background-color 150ms ease, transform 150ms var(--site-ease-out);
+}
+
+.site-choice:hover {
+  color: var(--site-text);
+  border-color: var(--site-border-strong);
+}
+
+.site-choice-selected {
+  border-color: var(--site-accent);
+  color: var(--site-accent-text);
+  background: var(--site-accent-soft);
+}
+
+.site-swatch {
+  display: grid;
+  height: 2.25rem;
+  place-items: center;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform 150ms var(--site-ease-out), border-color 150ms ease;
+}
+
+.site-swatch[aria-checked="true"] {
+  border-color: var(--site-text);
+}
+
+.site-hatch {
+  background-image: repeating-linear-gradient(315deg, var(--site-pattern) 0, var(--site-pattern) 1px, transparent 0, transparent 50%);
+  background-size: 10px 10px;
+  border-color: var(--site-border);
+}
+
+.site-dots {
+  background-image: radial-gradient(circle, var(--site-pattern) 1px, transparent 1px);
+}
+
+/*
+ * Hero cursor texture. The base layer is a static dot field; the enhanced
+ * layer adds a soft accent spotlight at the pointer position, and the `::after`
+ * layer renders thicker accent dots in concentric "staggered" bands around the
+ * cursor so the area under the pointer reads as more active. Coordinates are
+ * written via --hero-x/--hero-y by Hero.tsx using requestAnimationFrame, so no
+ * React state updates occur on pointermove. Coarse pointers and reduced motion
+ * keep the static field only. If color-mix is unsupported the enhanced
+ * declaration is dropped and the static fallback remains.
+ */
+.hero-texture {
+  --hero-x: 50%;
+  --hero-y: 38%;
+}
+
+.hero-texture-layer {
+  background-image: radial-gradient(circle, var(--site-pattern) 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-position: center top;
+  mask-image: radial-gradient(ellipse 70% 80% at 50% 40%, black 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 80% at 50% 40%, black 40%, transparent 100%);
+}
+
+.hero-texture-layer {
+  background-image:
+    radial-gradient(
+      circle 260px at var(--hero-x) var(--hero-y),
+      color-mix(in srgb, var(--site-accent) 20%, transparent),
+      transparent 100%
+    ),
+    radial-gradient(circle, var(--site-pattern) 1px, transparent 1px);
+  background-size: 100% 100%, 24px 24px;
+  transition: background-position 90ms linear;
+}
+
+/* Thicker accent dots in staggered rings around the pointer. */
+.hero-texture-layer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--site-accent) 85%, transparent) 1.8px,
+    transparent 2px
+  );
+  background-size: 24px 24px;
+  background-position: center top;
+  -webkit-mask-image: radial-gradient(
+    circle 190px at var(--hero-x) var(--hero-y),
+    #000 0 20%,
+    rgba(0, 0, 0, 0.42) 20% 42%,
+    rgba(0, 0, 0, 0.82) 42% 62%,
+    rgba(0, 0, 0, 0.38) 62% 80%,
+    transparent 80% 100%
+  );
+  mask-image: radial-gradient(
+    circle 190px at var(--hero-x) var(--hero-y),
+    #000 0 20%,
+    rgba(0, 0, 0, 0.42) 20% 42%,
+    rgba(0, 0, 0, 0.82) 42% 62%,
+    rgba(0, 0, 0, 0.38) 62% 80%,
+    transparent 80% 100%
+  );
+  opacity: 0.9;
+  transition: opacity 120ms ease;
+}
+
+@media (hover: none), (prefers-reduced-motion: reduce) {
+  .hero-texture-layer {
+    background-image: radial-gradient(circle, var(--site-pattern) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .hero-texture-layer::after {
+    display: none;
+  }
+}
+
+/*
+ * Preview boundary. Everything inside a demo is authored by the effect, so we
+ * neutralise inherited site variables, force a deterministic light canvas, and
+ * pin a demo-owned font. `color-scheme: only light` prevents UA dark styling
+ * from reaching transparent demo surfaces.
+ */
+.effect-preview-root {
+  --site-canvas: initial;
+  --site-surface: initial;
+  --site-surface-subtle: initial;
+  --site-surface-raised: initial;
+  --site-surface-inset: initial;
+  --site-bg: initial;
+  --site-surface-muted: initial;
+  --site-text: initial;
+  --site-text-muted: initial;
+  --site-text-subtle: initial;
+  --site-border: initial;
+  --site-border-strong: initial;
+  --site-accent: initial;
+  --site-accent-hover: initial;
+  --site-accent-soft: initial;
+  --site-accent-text: initial;
+  --site-accent-foreground: initial;
+  --site-accent-border: initial;
+  --site-focus: initial;
+  --site-pattern: initial;
+  --site-overlay: initial;
+  --site-shadow: initial;
+  --site-art-bg: initial;
+  --site-art-bg-strong: initial;
+  --site-art-stroke: initial;
+  --site-art-accent: initial;
+  --site-art-accent-soft: initial;
+  color: #18181b;
+  color-scheme: only light;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+
+/* Demo dark utilities must not activate from the shell's .dark class. */
+.dark .effect-preview-root,
+.dark .effect-preview-root * {
+  color-scheme: only light;
+}
+
+/*
+ * Touch devices never fire group-hover, so the card action row (maximize,
+ * bookmark, copy, share) has to stay visible instead of being revealed by
+ * hovering the card header.
+ */
+@media (hover: none) {
+  .effect-card-actions {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-shell *,
+  .site-shell *::before,
+  .site-shell *::after {
+    scroll-behavior: auto !important;
+  }
+
+  .site-popover {
+    animation: none;
+  }
 }
 
 .search-dropdown::-webkit-scrollbar {
@@ -40,7 +304,7 @@ html.no-transition *::after {
   background: transparent;
 }
 .search-dropdown::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.3);
+  background: var(--site-border-strong);
   border-radius: 2px;
 }
 
@@ -51,10 +315,22 @@ html.no-transition *::after {
   background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.35);
+  background: var(--site-border-strong);
   border-radius: 0;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.55);
+  background: var(--site-text-subtle);
 }
 
+/* Stable, accent-independent syntax palette for the code modal. */
+.code-surface {
+  --code-bg: #0f1117;
+  --code-text: #d7dce6;
+  --code-comment: #7c8496;
+  --code-keyword: #c4b5fd;
+  --code-string: #86efac;
+  --code-number: #fbbf24;
+  --code-tag: #7dd3fc;
+  --code-attr: #fda4af;
+  --code-punct: #94a3b8;
+}

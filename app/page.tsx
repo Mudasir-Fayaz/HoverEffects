@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Hero from "@/components/Hero";
-import ComponentSearch from "@/components/ComponentSearch";
 import HomeCategoryGrid from "@/components/HomeCategoryGrid";
 import { groups } from "@/data";
 import { getEffectsByCategory } from "@/lib/effects-data";
@@ -10,7 +9,7 @@ const siteUrl = "https://hovereffects.in";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "HoverEffects — Curated Hover Effects for Modern UI",
+  title: { absolute: "HoverEffects — Curated Hover Effects for Modern UI" },
   description:
     "A curated collection of CSS and React hover effects for buttons, cards, links, inputs, and more. Copy-ready for production.",
   openGraph: {
@@ -59,10 +58,7 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(homeSchema) }}
       />
       <Hero />
-      <section className="max-w-6xl mx-auto w-full px-3 sm:px-3 -mt-8 mb-8 relative z-10">
-        <ComponentSearch />
-      </section>
-      <section id="categories" className="max-w-6xl mx-auto w-full">
+      <section id="categories" className="max-w-6xl mx-auto w-full pt-4">
         <HomeCategoryGrid />
       </section>
     </main>

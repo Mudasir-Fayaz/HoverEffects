@@ -30,7 +30,7 @@ export const badgeGlow: HoverEffect = {
   cursor: default; transition: all 0.3s ease;
 }
 .badge-glow:hover {
-  box-shadow: 0 0 16px rgba(139,92,246,.6);
+  box-shadow: 0 0 10px rgba(139,92,246,.3);
   transform: scale(1.04);
 }
 </style>`,

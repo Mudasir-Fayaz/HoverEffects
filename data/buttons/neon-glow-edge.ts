@@ -1,35 +1,32 @@
 import type { HoverEffect } from "../types";
+import { buttonShell } from "../base-effects-css";
+
+const ACCENT = "#22d3ee";
+const ACCENT_ALT = "#67e8f9";
+
+const css = `${buttonShell(".btn-neon-glow-edge", ACCENT, ACCENT_ALT)}
+.btn-neon-glow-edge{background:#0d0f14;border:1px solid #272c3a;color:#e2e8f0;transition:border-color .3s ease,box-shadow .3s ease,color .3s ease}
+.btn-neon-glow-edge:hover,.btn-neon-glow-edge:focus-visible{border-color:var(--he-accent);box-shadow:0 0 10px color-mix(in srgb,var(--he-accent) 60%,transparent);color:var(--he-accent)}`;
 
 export const neonGlowEdgeButton: HoverEffect = {
   id: "btn-neon-glow-edge",
   title: "Neon Glow Edge",
   category: "buttons",
-  description: "Button edge lights up with a subtle neon glow on hover.",
-  tags: ["neon", "glow", "edge"],
-  animationType: "opacity",
+  description: "A cyan rim ignites around the dark button with a restrained outer glow.",
+  tags: ["neon", "glow", "border", "button"],
+  animationType: "shadow",
   complexity: "simple",
+  css,
   react: `export default function NeonGlowEdgeButton() {
   return (
-    <button className="px-8 py-3 font-semibold text-white bg-indigo-500 border-none cursor-pointer transition-[box-shadow] duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] hover:shadow-[0_0_15px_#a78bfa,0_0_30px_rgba(167,139,250,0.3)]">
-      Hover Me
-    </button>
+    <>
+      <style>{\`${css.replace(/`/g, "\\`")}\`}</style>
+      <button type="button" className="btn-neon-glow-edge">
+        Power on
+      </button>
+    </>
   );
 }`,
-  html: `<button class="btn-neon-glow-edge">Hover Me</button>
-
-<style>
-.btn-neon-glow-edge {
-  padding: 14px 40px;
-  font-size: 15px;
-  font-weight: 600;
-  color: #fff;
-  background: #6366f1;
-  border: none;
-  cursor: pointer;
-  transition: box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.btn-neon-glow-edge:hover {
-  box-shadow: 0 0 15px #a78bfa, 0 0 30px rgba(167, 139, 250, 0.3);
-}
-</style>`,
+  html: `<style>${css}</style>
+<button type="button" class="btn-neon-glow-edge">Power on</button>`,
 };

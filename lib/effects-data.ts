@@ -48,8 +48,29 @@ export function getCategoryBySlug(slug: string): Category | undefined {
   return categories.find((c) => c.slug === slug);
 }
 
-export function getEffectPath(effect: Pick<HoverEffect, "category" | "id">): string {
-  return `/category/${effect.category}?effect=${effect.id}`;
+/**
+ * Descriptive public slug for registry names, install URLs, and file targets.
+ * Falls back to the stable id so legacy effects keep their existing names.
+ */
+export function getEffectSlug(effect: Pick<HoverEffect, "id" | "slug">): string {
+  return effect.slug ?? effect.id;
+}
+
+export function getEffectPath(effect: Pick<HoverEffect, "category" | "id" | "slug">): string {
+  return `/category/${effect.category}?effect=${getEffectSlug(effect)}`;
+}
+
+/**
+ * Resolve a deep-link value that may be either a stable id (legacy links) or a
+ * descriptive slug, returning the stable id used for DOM ids and bookmarks.
+ */
+const effectIdBySlug = new Map(effects.map((effect) => [getEffectSlug(effect), effect.id]));
+const effectIds = new Set(effects.map((effect) => effect.id));
+
+export function resolveEffectId(value: string | null | undefined): string | undefined {
+  if (!value) return undefined;
+  if (effectIds.has(value)) return value;
+  return effectIdBySlug.get(value);
 }
 
 export function getEffectUrl(

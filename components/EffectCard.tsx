@@ -19,6 +19,7 @@ import { previewMap } from "@/components/previews";
 import { useBookmarks } from "@/hooks/useBookmarks";
 import Tooltip from "@/components/previews/tooltips/Tooltip";
 import TouchPreviewWrapper from "@/components/previews/TouchPreviewWrapper";
+import { useDialogFocus } from "@/hooks/useDialogFocus";
 
 interface EffectCardProps {
   effect: HoverEffect;
@@ -40,12 +41,14 @@ export default function EffectCard({
   highlighted,
 }: EffectCardProps) {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [touchHover, setTouchHover] = useState(false);
-  const touchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const previewDialogRef = useRef<HTMLDivElement>(null);
+  const previewCloseRef = useRef<HTMLButtonElement>(null);
   const { isBookmarked, toggleBookmark } = useBookmarks();
-  const isLargePreview =
+  const isShowcase =
     effect.category === "cards" ||
     effect.category === "images";
+  const isTooltip =
+    effect.category === "tooltips" || effect.id === "input-context-help-bubble";
   const bookmarked = isBookmarked(effect.id);
 
   const [copied, setCopied] = useState(false);
@@ -61,88 +64,71 @@ export default function EffectCard({
 
   const handleCopyLink = useCallback(async () => {
     const payload = getSharePayload();
-    await navigator.clipboard.writeText(payload.text);
-    setCopied(true);
-    if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
-    copyTimerRef.current = setTimeout(() => setCopied(false), 1500);
+    try {
+      await navigator.clipboard.writeText(payload.text);
+      setCopied(true);
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+      copyTimerRef.current = setTimeout(() => setCopied(false), 1500);
+    } catch {
+      setCopied(false);
+    }
   }, [getSharePayload]);
 
   const handleShare = useCallback(async () => {
     const payload = getSharePayload();
 
-    if (navigator.share) {
-      await navigator.share({
-        title: effect.title,
-        text: effect.title,
-        url: payload.url,
-      });
-      return;
-    }
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: effect.title,
+          text: effect.title,
+          url: payload.url,
+        });
+        return;
+      }
 
-    await navigator.clipboard.writeText(payload.text);
+      await navigator.clipboard.writeText(payload.text);
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") return;
+    }
   }, [effect.title, getSharePayload]);
 
-  useEffect(() => {
-    if (!isPreviewOpen) return;
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setIsPreviewOpen(false);
-      }
-    };
-
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", onKeyDown);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", onKeyDown);
-    };
-  }, [isPreviewOpen]);
-
-  const handleTouchStart = useCallback(() => {
-    if (touchTimer.current) clearTimeout(touchTimer.current);
-    setTouchHover(true);
-  }, []);
-
-  const handleTouchEnd = useCallback(() => {
-    touchTimer.current = setTimeout(() => setTouchHover(false), 600);
-  }, []);
+  useDialogFocus(
+    isPreviewOpen,
+    () => setIsPreviewOpen(false),
+    previewDialogRef,
+    previewCloseRef,
+  );
 
   useEffect(() => {
     return () => {
       if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
-      if (touchTimer.current) clearTimeout(touchTimer.current);
     };
   }, []);
 
   const iconButtonClass =
-                  "inline-flex items-center justify-center w-8 h-8 border cursor-pointer";
+    "inline-flex items-center justify-center w-11 h-11 border cursor-pointer transition-transform duration-150 active:scale-[0.97] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[var(--site-focus)]";
 
   return (
     <>
       <div
         id={effect.id}
-          className={`group relative bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 overflow-hidden scroll-mt-24 outline-none
-            ${touchHover ? "touch-active" : ""}
-            ${highlighted ? "border-neutral-300 dark:border-neutral-600" : ""}`}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
+        className={`group relative bg-[var(--site-surface)] border border-[var(--site-border)] overflow-hidden scroll-mt-24 outline-none
+            ${highlighted ? "border-[var(--site-accent-border)]" : ""}`}
       >
         {/* Header — title always visible, icons on hover (desktop) / always visible (mobile) */}
-        <div className="flex items-center justify-between gap-3 px-3 py-2 text-neutral-700 dark:text-neutral-300">
+        <div className="flex items-center justify-between gap-3 bg-[var(--site-surface-subtle)] px-3 py-2 text-[var(--site-text-muted)]">
           <div className="min-w-0 flex-1">
-            <h3 className="truncate text-sm font-semibold text-neutral-800 dark:text-neutral-200">
+            <h3 className="truncate text-sm font-semibold text-[var(--site-text)]">
               {effect.title}
             </h3>
           </div>
 
-          <div className="flex items-center gap-1.5 shrink-0 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-150">
+          <div className="effect-card-actions flex items-center gap-1 shrink-0 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 transition-opacity duration-150">
             <Tooltip label="Maximize">
               <button
                 onClick={() => setIsPreviewOpen(true)}
-                className={`${iconButtonClass} border-neutral-100 dark:border-neutral-700 text-neutral-400 dark:text-neutral-500`}
+                className={`${iconButtonClass} border-[var(--site-border)] text-[var(--site-text-muted)] hover:text-[var(--site-text)]`}
                 aria-label={`Maximize preview for ${effect.title}`}
               >
                 <Maximize2 className="w-3.5 h-3.5" />
@@ -151,7 +137,7 @@ export default function EffectCard({
             <Tooltip label={bookmarked ? "Unbookmark" : "Bookmark"}>
               <button
                 onClick={() => toggleBookmark(effect)}
-                className={`${iconButtonClass} border-neutral-100 dark:border-neutral-700 text-neutral-400 dark:text-neutral-500`}
+                className={`${iconButtonClass} border-[var(--site-border)] text-[var(--site-text-muted)] hover:text-[var(--site-text)]`}
                 aria-label={`${bookmarked ? "Remove bookmark from" : "Bookmark"} ${effect.title}`}
               >
                 {bookmarked ? (
@@ -164,7 +150,7 @@ export default function EffectCard({
             <Tooltip label={copied ? "Copied!" : "Copy link"}>
               <button
                 onClick={handleCopyLink}
-                className={`${iconButtonClass} border-neutral-100 dark:border-neutral-700 text-neutral-400 dark:text-neutral-500`}
+                className={`${iconButtonClass} border-[var(--site-border)] text-[var(--site-text-muted)] hover:text-[var(--site-text)]`}
                 aria-label={`Copy link for ${effect.title}`}
               >
                 {copied ? (
@@ -177,7 +163,7 @@ export default function EffectCard({
             <Tooltip label="Share">
               <button
                 onClick={handleShare}
-                className={`${iconButtonClass} border-neutral-100 dark:border-neutral-700 text-neutral-400 dark:text-neutral-500`}
+                className={`${iconButtonClass} border-[var(--site-border)] text-[var(--site-text-muted)] hover:text-[var(--site-text)]`}
                 aria-label={`Share ${effect.title}`}
               >
                 <Share2 className="w-3.5 h-3.5" />
@@ -188,24 +174,24 @@ export default function EffectCard({
 
         {/* Preview area — theme bg shade, no mesh */}
         <div
-          className={`flex items-center justify-center overflow-hidden bg-neutral-50/80 dark:bg-neutral-800/50
-            ${isLargePreview ? "min-h-64" : "min-h-40"}`}
-          style={isLargePreview ? { minHeight: "clamp(200px, 26vw, 320px)" } : undefined}
+          className={`flex items-center justify-center overflow-hidden bg-white
+            ${isShowcase ? "h-[280px]" : "min-h-40"}
+            ${isTooltip ? "min-h-56 pt-20" : ""}`}
         >
           <TouchPreviewWrapper>
             <EffectPreview effect={effect} />
           </TouchPreviewWrapper>
         </div>
 
-        {/* Footer — no bg, attribution + code button */}
-        <div className="flex items-center justify-between gap-3 px-3 py-2">
+        {/* Footer — theme shade, attribution + code button */}
+        <div className="flex items-center justify-between gap-3 bg-[var(--site-surface-subtle)] px-3 py-2">
           <div className="min-w-0 flex-1">
             {effect.credit && (
               <Link
                 href={effect.credit.url}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1.5 self-start text-xs font-medium text-neutral-400 dark:text-neutral-500"
+                className="inline-flex items-center gap-1.5 self-start text-xs font-medium text-[var(--site-text-subtle)]"
               >
                 <LinkIcon className="w-3 h-3" />
                 {effect.credit.title}
@@ -215,7 +201,7 @@ export default function EffectCard({
 
           <button
             onClick={() => onViewCode(effect)}
-            className="inline-flex shrink-0 items-center gap-1.5  border border-neutral-200 dark:border-neutral-700 px-2.5 py-1.5 text-xs font-medium text-neutral-500 dark:text-neutral-400 cursor-pointer"
+            className="inline-flex shrink-0 items-center gap-1.5  border border-[var(--site-border)] px-2.5 py-1.5 text-xs font-medium text-[var(--site-text-muted)] hover:border-[var(--site-accent-border)] hover:text-[var(--site-text)] cursor-pointer"
           >
             <Code className="w-3 h-3" />
             Code
@@ -225,23 +211,24 @@ export default function EffectCard({
 
       {isPreviewOpen && (
         <div
-          className="fixed inset-0 z-9999 bg-neutral-900/60 backdrop-blur-md"
-          onClick={() => setIsPreviewOpen(false)}
+          ref={previewDialogRef}
+          className="fixed inset-0 z-9999 bg-[var(--site-overlay)] backdrop-blur-md"
           role="dialog"
           aria-modal="true"
-          aria-label={`${effect.title} preview`}
+          aria-labelledby={`${effect.id}-preview-title`}
+          tabIndex={-1}
         >
           <div
             className="flex flex-col h-full w-full"
-            onClick={(event) => event.stopPropagation()}
           >
-            <div className="flex items-center justify-between gap-3 px-5 py-3.5 bg-white dark:bg-neutral-900 border-b border-neutral-100 dark:border-neutral-800 shrink-0">
-              <h4 className="truncate text-sm font-semibold text-neutral-800 dark:text-neutral-200">
+            <div className="flex shrink-0 items-center justify-between gap-3 border-b border-[var(--site-border)] bg-[var(--site-surface)] px-3 py-2 sm:px-4">
+              <h4 id={`${effect.id}-preview-title`} className="truncate text-sm font-semibold text-[var(--site-text)]">
                 {effect.title}
               </h4>
               <button
+                ref={previewCloseRef}
                 onClick={() => setIsPreviewOpen(false)}
-                className="inline-flex items-center justify-center w-8 h-8  text-neutral-400 dark:text-neutral-500 cursor-pointer"
+                className="inline-flex h-10 w-10 shrink-0 items-center justify-center text-[var(--site-text-subtle)] cursor-pointer transition-transform duration-150 hover:text-[var(--site-text)] active:scale-[0.97] focus-visible:outline-3 focus-visible:outline-[var(--site-focus)]"
                 aria-label={`Close preview for ${effect.title}`}
                 title={`Close preview for ${effect.title}`}
               >
@@ -249,13 +236,12 @@ export default function EffectCard({
               </button>
             </div>
 
-            <div className="flex-1 flex items-center justify-center p-4 sm:p-8 bg-neutral-50/50 dark:bg-neutral-950/50 overflow-auto">
-              <div className="w-full max-w-3xl">
-                <div className="aspect-4/3 sm:aspect-16/10 w-full border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 shadow-sm dark:shadow-neutral-900/50 flex items-center justify-center overflow-hidden p-8 sm:p-12">
-                  <TouchPreviewWrapper>
-                    <EffectPreview effect={effect} />
-                  </TouchPreviewWrapper>
-                </div>
+            {/* Dotted stage with the live effect inside a centered container. */}
+            <div className="site-dots flex flex-1 items-center justify-center overflow-auto bg-[var(--site-canvas)] px-4 py-6 [background-size:16px_16px] sm:px-8 sm:py-8">
+              <div className="flex w-full max-w-3xl items-center justify-center rounded-lg border border-[var(--site-border)] bg-white p-6 shadow-[0_10px_40px_var(--site-shadow)] sm:p-12">
+                <TouchPreviewWrapper>
+                  <EffectPreview effect={effect} />
+                </TouchPreviewWrapper>
               </div>
             </div>
           </div>

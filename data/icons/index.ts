@@ -1,53 +1,122 @@
 import type { GroupMeta, HoverEffect } from "../types";
-export { iconExtra01 } from "./icon-extra-01";
-export { iconExtra02 } from "./icon-extra-02";
-export { iconExtra03 } from "./icon-extra-03";
-export { iconExtra04 } from "./icon-extra-04";
-export { iconExtra05 } from "./icon-extra-05";
-export { iconExtra06 } from "./icon-extra-06";
-export { iconExtra07 } from "./icon-extra-07";
-export { iconExtra08 } from "./icon-extra-08";
+import { expandedEffectsByCategory } from "../expanded-effects";
+import { iconPathWrite } from "./icon-path-write";
+import { iconSegmentRelay } from "./icon-segment-relay";
+import { iconPixelResolve } from "./icon-pixel-resolve";
+import { iconGridAlign } from "./icon-grid-align";
+import { iconLayerFan } from "./icon-layer-fan";
+import { iconCodeBracketSpread } from "./icon-code-bracket-spread";
+import { iconCopyPageOffset } from "./icon-copy-page-offset";
+import { iconDownloadStemReach } from "./icon-download-stem-reach";
+import { iconCloudDetailDraw } from "./icon-cloud-detail-draw";
+import { iconFolderTabOpen } from "./icon-folder-tab-open";
+import { iconBookPageRiffle } from "./icon-book-page-riffle";
+import { iconMapPanelSpread } from "./icon-map-panel-spread";
+import { iconCompassNeedleAlign } from "./icon-compass-needle-align";
+import { iconApertureBlades } from "./icon-aperture-blades";
+import { iconWaveformBreathe } from "./icon-waveform-breathe";
+import { iconEqualizerRelay } from "./icon-equalizer-relay";
+import { iconVolumeDetailTrace } from "./icon-volume-detail-trace";
+import { iconSparkleDetailWrite } from "./icon-sparkle-detail-write";
+import { iconPuzzleAlign } from "./icon-puzzle-align";
+import { iconChainDetailSettle } from "./icon-chain-detail-settle";
+import { iconThreadStitch } from "./icon-thread-stitch";
+import { iconBarcodeDetailScan } from "./icon-barcode-detail-scan";
+import { iconQrCellRelay } from "./icon-qr-cell-relay";
+import { iconCircuitRoute } from "./icon-circuit-route";
+import { iconHexTileDock } from "./icon-hex-tile-dock";
+import { iconCubeStackSettle } from "./icon-cube-stack-settle";
+import { iconPrismRegister } from "./icon-prism-register";
+import { iconRulerTickRelay } from "./icon-ruler-tick-relay";
+import { iconCalendarDetailTrace } from "./icon-calendar-detail-trace";
+import { iconClockDetailSettle } from "./icon-clock-detail-settle";
+import { iconShieldSeamWrite } from "./icon-shield-seam-write";
+import { iconFingerprintRoute } from "./icon-fingerprint-route";
+import { iconPointerDetailParallax } from "./icon-pointer-detail-parallax";
+import { iconDirectionalDetailAccent } from "./icon-directional-detail-accent";
+import { iconConnectorEndpointFollow } from "./icon-connector-endpoint-follow";
+export { iconPathWrite } from "./icon-path-write";
+export { iconSegmentRelay } from "./icon-segment-relay";
+export { iconPixelResolve } from "./icon-pixel-resolve";
+export { iconGridAlign } from "./icon-grid-align";
+export { iconLayerFan } from "./icon-layer-fan";
+export { iconCodeBracketSpread } from "./icon-code-bracket-spread";
+export { iconCopyPageOffset } from "./icon-copy-page-offset";
+export { iconDownloadStemReach } from "./icon-download-stem-reach";
+export { iconCloudDetailDraw } from "./icon-cloud-detail-draw";
+export { iconFolderTabOpen } from "./icon-folder-tab-open";
+export { iconBookPageRiffle } from "./icon-book-page-riffle";
+export { iconMapPanelSpread } from "./icon-map-panel-spread";
+export { iconCompassNeedleAlign } from "./icon-compass-needle-align";
+export { iconApertureBlades } from "./icon-aperture-blades";
+export { iconWaveformBreathe } from "./icon-waveform-breathe";
+export { iconEqualizerRelay } from "./icon-equalizer-relay";
+export { iconVolumeDetailTrace } from "./icon-volume-detail-trace";
+export { iconSparkleDetailWrite } from "./icon-sparkle-detail-write";
+export { iconPuzzleAlign } from "./icon-puzzle-align";
+export { iconChainDetailSettle } from "./icon-chain-detail-settle";
+export { iconThreadStitch } from "./icon-thread-stitch";
+export { iconBarcodeDetailScan } from "./icon-barcode-detail-scan";
+export { iconQrCellRelay } from "./icon-qr-cell-relay";
+export { iconCircuitRoute } from "./icon-circuit-route";
+export { iconHexTileDock } from "./icon-hex-tile-dock";
+export { iconCubeStackSettle } from "./icon-cube-stack-settle";
+export { iconPrismRegister } from "./icon-prism-register";
+export { iconRulerTickRelay } from "./icon-ruler-tick-relay";
+export { iconCalendarDetailTrace } from "./icon-calendar-detail-trace";
+export { iconClockDetailSettle } from "./icon-clock-detail-settle";
+export { iconShieldSeamWrite } from "./icon-shield-seam-write";
+export { iconFingerprintRoute } from "./icon-fingerprint-route";
+export { iconPointerDetailParallax } from "./icon-pointer-detail-parallax";
+export { iconDirectionalDetailAccent } from "./icon-directional-detail-accent";
+export { iconConnectorEndpointFollow } from "./icon-connector-endpoint-follow";
 
-export { iconRotate } from "./icon-rotate";
-export { iconBounce } from "./icon-bounce";
-export { iconPop } from "./icon-pop";
-export { iconColorFill } from "./icon-color-fill";
-
-import { iconRotate } from "./icon-rotate";
-import { iconBounce } from "./icon-bounce";
-import { iconPop } from "./icon-pop";
-import { iconColorFill } from "./icon-color-fill";
-
-import { iconExtra01 } from "./icon-extra-01";
-import { iconExtra02 } from "./icon-extra-02";
-import { iconExtra03 } from "./icon-extra-03";
-import { iconExtra04 } from "./icon-extra-04";
-import { iconExtra05 } from "./icon-extra-05";
-import { iconExtra06 } from "./icon-extra-06";
-import { iconExtra07 } from "./icon-extra-07";
-import { iconExtra08 } from "./icon-extra-08";
 export const iconEffects: HoverEffect[] = [
-  iconRotate,
-  iconBounce,
-  iconColorFill,
-  iconPop,
-  iconExtra01,
-  iconExtra02,
-  iconExtra03,
-  iconExtra04,
-  iconExtra05,
-  iconExtra06,
-  iconExtra07,
-  iconExtra08,
+  ...expandedEffectsByCategory.icons,
+  iconPathWrite,
+  iconSegmentRelay,
+  iconPixelResolve,
+  iconGridAlign,
+  iconLayerFan,
+  iconCodeBracketSpread,
+  iconCopyPageOffset,
+  iconDownloadStemReach,
+  iconCloudDetailDraw,
+  iconFolderTabOpen,
+  iconBookPageRiffle,
+  iconMapPanelSpread,
+  iconCompassNeedleAlign,
+  iconApertureBlades,
+  iconWaveformBreathe,
+  iconEqualizerRelay,
+  iconVolumeDetailTrace,
+  iconSparkleDetailWrite,
+  iconPuzzleAlign,
+  iconChainDetailSettle,
+  iconThreadStitch,
+  iconBarcodeDetailScan,
+  iconQrCellRelay,
+  iconCircuitRoute,
+  iconHexTileDock,
+  iconCubeStackSettle,
+  iconPrismRegister,
+  iconRulerTickRelay,
+  iconCalendarDetailTrace,
+  iconClockDetailSettle,
+  iconShieldSeamWrite,
+  iconFingerprintRoute,
+  iconPointerDetailParallax,
+  iconDirectionalDetailAccent,
+  iconConnectorEndpointFollow,
 ];
 
 export const iconsMeta: GroupMeta = {
   slug: "icons",
   shortTitle: "Icons",
   title: "Icon Hover Effects",
-  description: "Rotate, bounce, and color transition effects",
+  description: "Ring, spin, bloom, and glow effects for circular icons",
   longDescription:
-    "Playful and refined icon hover effects including rotations, bounces, scale pulses, and smooth color transitions. Great for toolbars, nav items, and social links.",
+    "Circular icon hover effects with settling rings, spins, blooms, sonar pulses, and soft glows. Great for toolbars, nav items, and social links.",
   keywords: [
     "icon hover effects",
     "CSS icon animations",

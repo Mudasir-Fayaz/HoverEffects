@@ -38,7 +38,13 @@ export default function CategoryCard({
       </div>
       <div className="mt-3 mx-3 mb-3 h-32 sm:h-36 bg-neutral-50/80 rounded-lg flex items-center justify-center overflow-hidden">
         {Preview ? (
-          <div className="[&>*]:pointer-events-none" style={{ transform: "scale(0.55)", transformOrigin: "center center" }}>
+          <div
+            className="[&>*]:pointer-events-none"
+            style={{
+              transform: `scale(${slug === "cards" ? 0.48 : 0.55})`,
+              transformOrigin: "center center",
+            }}
+          >
             <Preview />
           </div>
         ) : (

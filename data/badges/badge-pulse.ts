@@ -38,7 +38,7 @@ export const badgePulse: HoverEffect = {
   border: 1px solid #a7f3d0; cursor: default;
   transition: all 0.3s ease;
 }
-.badge-pulse:hover { box-shadow: 0 0 12px rgba(16,185,129,.25); background: #d1fae5; }
+.badge-pulse:hover { box-shadow: 0 0 10px rgba(16,185,129,.16); background: #d1fae5; }
 .badge-dot {
   display: inline-block; width: 8px; height: 8px;
   border-radius: 50%; background: #10b981;

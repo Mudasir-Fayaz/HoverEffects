@@ -7,9 +7,17 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "registry": "bun scripts/generate-registry.ts"
+    "test": "bun test",
+    "registry": "bun scripts/generate-registry.ts",
+    "appearance": "bun scripts/generate-appearance-css.ts",
+    "search-index": "bun scripts/generate-search-index.ts",
+    "generate": "bun run registry && bun run appearance && bun run search-index",
+    "verify": "bun run lint && bunx tsc --noEmit --incremental false && bun test",
+    "predev": "bun run appearance",
+    "prebuild": "bun run generate"
   },
   "dependencies": {
+    "@tabler/icons-react": "^3.48.0",
     "lucide-react": "^1.20.0",
     "motion": "^12.40.0",
     "next": "16.2.3",
@@ -18,6 +26,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/bun": "^1.4.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

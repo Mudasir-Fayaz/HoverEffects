@@ -1,0 +1,150 @@
+"use client";
+
+import { tooltipCollisionAwarePlacement } from "@/data/tooltips/tooltip-collision-aware-placement";
+import { useEffect, useRef } from "react";
+
+export default function TooltipCollisionAwarePlacement() {
+  const rootRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const trigger = root.querySelector(".tip-trigger") as HTMLAnchorElement | null;
+    const bubble = root.querySelector(".tip-bubble") as HTMLElement | null;
+    if (!trigger || !bubble) return;
+
+    const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const HOVER_DELAY = 80;
+
+    const enabled = true;
+    const state = { hover: false, focus: false, suppressed: false, timer: 0, open: false };
+    let openChange: (next: boolean) => void = () => {};
+
+    const setOpen = (next: boolean) => {
+      if (state.open === next) return;
+      state.open = next;
+      bubble.classList.toggle("is-open", next);
+      openChange(next);
+    };
+
+    const maybeOpen = () => {
+      if (!enabled || state.suppressed) return;
+      if (state.focus) {
+        setOpen(true);
+        return;
+      }
+      if (state.hover) {
+        window.clearTimeout(state.timer);
+        state.timer = window.setTimeout(() => {
+          state.timer = 0;
+          if (enabled && state.hover && !state.suppressed) setOpen(true);
+        }, HOVER_DELAY);
+      }
+    };
+
+    const maybeClose = () => {
+      window.clearTimeout(state.timer);
+      state.timer = 0;
+      if (!state.hover && !state.focus) setOpen(false);
+    };
+
+    const onPointerEnter = (event: PointerEvent) => {
+      if (!finePointer.matches && event.pointerType !== "touch") return;
+      state.hover = true;
+      state.suppressed = false;
+      maybeOpen();
+    };
+    const onPointerLeave = (event: PointerEvent) => {
+      state.hover = false;
+      state.suppressed = false;
+      if (event.pointerType === "touch") {
+        // Touch pointers vanish on release. Wait a beat so the tap
+        // activation layer can re-enter before the bubble closes.
+        window.clearTimeout(state.timer);
+        state.timer = window.setTimeout(() => {
+          state.timer = 0;
+          // A tap focuses the trigger, but on touch the bubble should close
+          // with the activation window — not stay pinned by that focus.
+          if (!state.hover) setOpen(false);
+        }, 420);
+        return;
+      }
+      maybeClose();
+    };
+    const onFocusIn = () => {
+      state.focus = true;
+      state.suppressed = false;
+      maybeOpen();
+    };
+    const onFocusOut = () => {
+      state.focus = false;
+      state.suppressed = false;
+      maybeClose();
+    };
+    const onKeydown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape" || !state.open) return;
+      setOpen(false);
+      if (state.hover || state.focus) state.suppressed = true;
+    };
+    root.addEventListener("pointerenter", onPointerEnter);
+    root.addEventListener("pointerleave", onPointerLeave);
+    root.addEventListener("focusin", onFocusIn);
+    root.addEventListener("focusout", onFocusOut);
+    root.addEventListener("keydown", onKeydown);
+
+    const reflow = () => {
+      if (!state.open) return;
+      const t = trigger.getBoundingClientRect();
+      const needed = bubble.offsetHeight + 18;
+      const placement = t.top >= needed ? "top" : "bottom";
+      bubble.setAttribute("data-placement", placement);
+      const b = bubble.getBoundingClientRect();
+      const pad = 10;
+      let shift = 0;
+      if (b.left < pad) shift = pad - b.left;
+      else if (b.right > window.innerWidth - pad) shift = window.innerWidth - pad - b.right;
+      bubble.style.setProperty("--shift", shift + "px");
+      let arrowX = t.left + t.width / 2 - (b.left + shift);
+      if (arrowX < 16) arrowX = 16;
+      if (arrowX > b.width - 16) arrowX = b.width - 16;
+      bubble.style.setProperty("--arrow-x", arrowX + "px");
+    };
+
+    let reflowRaf = 0;
+    const scheduleReflow = () => {
+      if (!state.open) return;
+      if (reflowRaf) cancelAnimationFrame(reflowRaf);
+      reflowRaf = requestAnimationFrame(() => {
+        reflowRaf = 0;
+        reflow();
+      });
+    };
+
+    openChange = (next: boolean) => {
+      if (next) scheduleReflow();
+    };
+    window.addEventListener("resize", scheduleReflow);
+    window.addEventListener("scroll", scheduleReflow, true);
+    return () => {
+      root.removeEventListener("pointerenter", onPointerEnter);
+      root.removeEventListener("pointerleave", onPointerLeave);
+      root.removeEventListener("focusin", onFocusIn);
+      root.removeEventListener("focusout", onFocusOut);
+      root.removeEventListener("keydown", onKeydown);
+      window.clearTimeout(state.timer);
+      window.removeEventListener("resize", scheduleReflow);
+      window.removeEventListener("scroll", scheduleReflow, true);
+      cancelAnimationFrame(reflowRaf);
+    };
+  }, []);
+
+  return (
+    <>
+      <style>{tooltipCollisionAwarePlacement.css}</style>
+      <div ref={rootRef} className="he-tooltip-collision-aware-placement" data-tip>
+        <a onClick={(event) => event.preventDefault()} className="tip-trigger" href="https://example.com" aria-describedby="tooltip-collision-aware-placement-tip35-bubble"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.2" stroke="currentColor" strokeWidth="1.4" /><path d="M6.4 6.3a1.7 1.7 0 0 1 3.3.6c0 1.1-1.7 1.3-1.7 2.3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /><circle cx="8" cy="11.4" r=".9" fill="currentColor" /></svg> Keyboard map</a>
+        <span className="tip-bubble" id="tooltip-collision-aware-placement-tip35-bubble" role="tooltip"><span className="tip-text">Press G then I to jump to the inbox; G then S opens settings. The full map is in the details section below.</span><i className="tip-arrow" aria-hidden="true"></i></span>
+      </div>
+    </>
+  );
+}
