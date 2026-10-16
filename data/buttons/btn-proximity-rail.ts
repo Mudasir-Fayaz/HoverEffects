@@ -99,15 +99,17 @@ export default function BtnProximityRail() {
       button.style.setProperty("--rail-top", (0.35 + 0.45 * (1 - t)).toFixed(3));
       button.style.setProperty("--rail-bottom", (0.35 + 0.45 * t).toFixed(3));
     };
-    const enabled = () =>
-      fineQuery.matches && !reduceQuery.matches && !button.disabled;
+    const enabled = (event: PointerEvent) =>
+      (fineQuery.matches || event.pointerType === "touch") &&
+      !reduceQuery.matches &&
+      !button.disabled;
     const onMove = (event: PointerEvent) => {
       if (!live) return;
       y = event.clientY - (rect as DOMRect).top;
       if (!frame) frame = requestAnimationFrame(render);
     };
     const onEnter = (event: PointerEvent) => {
-      if (!enabled() || event.pointerType === "touch") return;
+      if (!enabled(event)) return;
       measure();
       live = true;
       onMove(event);
@@ -160,5 +162,5 @@ export default function BtnProximityRail() {
         </span>
         <span class="label">Resume session</span>
       </button>
-<script>(function(){'use strict';var reduceQuery=matchMedia('(prefers-reduced-motion: reduce)');var fineQuery=matchMedia('(hover: hover) and (pointer: fine)');document.querySelectorAll('.he-btn-proximity-rail').forEach(function(button){var rect=null,frame=0,live=false,y=0;function measure(){rect=button.getBoundingClientRect()}function render(){frame=0;if(!live||!rect)return;var t=Math.max(0,Math.min(1,y/rect.height));button.style.setProperty('--rail-top',(0.35+0.45*(1-t)).toFixed(3));button.style.setProperty('--rail-bottom',(0.35+0.45*t).toFixed(3))}function enabled(){return fineQuery.matches&&!reduceQuery.matches&&!button.disabled}function onMove(event){if(!live)return;y=event.clientY-rect.top;if(!frame)frame=requestAnimationFrame(render)}function onEnter(event){if(!enabled()||event.pointerType==='touch')return;measure();live=true;onMove(event)}function reset(){live=false;if(frame){cancelAnimationFrame(frame);frame=0}button.style.removeProperty('--rail-top');button.style.removeProperty('--rail-bottom');rect=null}button.addEventListener('pointerenter',onEnter);button.addEventListener('pointermove',onMove);button.addEventListener('pointerleave',reset);button.addEventListener('pointercancel',reset);window.addEventListener('resize',reset);window.addEventListener('scroll',reset,true)})})();</script>`,
+<script>(function(){'use strict';var reduceQuery=matchMedia('(prefers-reduced-motion: reduce)');var fineQuery=matchMedia('(hover: hover) and (pointer: fine)');document.querySelectorAll('.he-btn-proximity-rail').forEach(function(button){var rect=null,frame=0,live=false,y=0;function measure(){rect=button.getBoundingClientRect()}function render(){frame=0;if(!live||!rect)return;var t=Math.max(0,Math.min(1,y/rect.height));button.style.setProperty('--rail-top',(0.35+0.45*(1-t)).toFixed(3));button.style.setProperty('--rail-bottom',(0.35+0.45*t).toFixed(3))}function enabled(event){return (fineQuery.matches||event.pointerType==='touch')&&!reduceQuery.matches&&!button.disabled}function onMove(event){if(!live)return;y=event.clientY-rect.top;if(!frame)frame=requestAnimationFrame(render)}function onEnter(event){if(!enabled(event))return;measure();live=true;onMove(event)}function reset(){live=false;if(frame){cancelAnimationFrame(frame);frame=0}button.style.removeProperty('--rail-top');button.style.removeProperty('--rail-bottom');rect=null}button.addEventListener('pointerenter',onEnter);button.addEventListener('pointermove',onMove);button.addEventListener('pointerleave',reset);button.addEventListener('pointercancel',reset);window.addEventListener('resize',reset);window.addEventListener('scroll',reset,true)})})();</script>`,
 };

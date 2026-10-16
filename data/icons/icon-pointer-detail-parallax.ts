@@ -88,7 +88,10 @@ export default function IconPointerDetailParallax() {
       d1.style.transform = "translate(" + (cx * 1.2).toFixed(2) + "px," + (cy * 0.9).toFixed(2) + "px)";
       d2.style.transform = "translate(" + (cx * -2).toFixed(2) + "px," + (cy * -1.5).toFixed(2) + "px)";
     };
-    const enabled = () => fineQuery.matches && !reduceQuery.matches && !button.disabled;
+    const enabled = (event: PointerEvent) =>
+      (fineQuery.matches || event.pointerType === "touch") &&
+      !reduceQuery.matches &&
+      !button.disabled;
     const onMove = (event: PointerEvent) => {
       if (!live) return;
       x = event.clientX - (rect as DOMRect).left;
@@ -96,7 +99,7 @@ export default function IconPointerDetailParallax() {
       if (!frame) frame = requestAnimationFrame(render);
     };
     const onEnter = (event: PointerEvent) => {
-      if (!enabled() || event.pointerType === "touch") return;
+      if (!enabled(event)) return;
       measure();
       live = true;
       onMove(event);
@@ -163,5 +166,5 @@ export default function IconPointerDetailParallax() {
           </g>
         </svg>
       </button>
-<script>(function(){'use strict';var reduceQuery=matchMedia('(prefers-reduced-motion: reduce)'),fineQuery=matchMedia('(hover: hover) and (pointer: fine)');document.querySelectorAll('.he-icon-pointer-detail-parallax').forEach(function(button){var d1=button.querySelector('.hi33-d1'),d2=button.querySelector('.hi33-d2');if(!d1||!d2)return;var rect=null,frame=0,live=false,x=0,y=0;function measure(){rect=button.getBoundingClientRect()}function render(){frame=0;if(!live||!rect)return;var nx=(x/rect.width)*2-1,ny=(y/rect.height)*2-1,cx=Math.max(-1,Math.min(1,nx)),cy=Math.max(-1,Math.min(1,ny));d1.style.transform='translate('+(cx*1.2).toFixed(2)+'px,'+(cy*0.9).toFixed(2)+'px)';d2.style.transform='translate('+(cx*-2).toFixed(2)+'px,'+(cy*-1.5).toFixed(2)+'px)'}function enabled(){return fineQuery.matches&&!reduceQuery.matches}function onMove(event){if(!live)return;x=event.clientX-rect.left;y=event.clientY-rect.top;if(!frame)frame=requestAnimationFrame(render)}function onEnter(event){if(!enabled()||event.pointerType==='touch')return;measure();live=true;onMove(event)}function reset(){live=false;if(frame){cancelAnimationFrame(frame);frame=0}d1.style.transform='';d2.style.transform='';rect=null}button.addEventListener('pointerenter',onEnter);button.addEventListener('pointermove',onMove);button.addEventListener('pointerleave',reset);button.addEventListener('pointercancel',reset);window.addEventListener('resize',reset);window.addEventListener('scroll',reset,true)})})();</script>`,
+<script>(function(){'use strict';var reduceQuery=matchMedia('(prefers-reduced-motion: reduce)'),fineQuery=matchMedia('(hover: hover) and (pointer: fine)');document.querySelectorAll('.he-icon-pointer-detail-parallax').forEach(function(button){var d1=button.querySelector('.hi33-d1'),d2=button.querySelector('.hi33-d2');if(!d1||!d2)return;var rect=null,frame=0,live=false,x=0,y=0;function measure(){rect=button.getBoundingClientRect()}function render(){frame=0;if(!live||!rect)return;var nx=(x/rect.width)*2-1,ny=(y/rect.height)*2-1,cx=Math.max(-1,Math.min(1,nx)),cy=Math.max(-1,Math.min(1,ny));d1.style.transform='translate('+(cx*1.2).toFixed(2)+'px,'+(cy*0.9).toFixed(2)+'px)';d2.style.transform='translate('+(cx*-2).toFixed(2)+'px,'+(cy*-1.5).toFixed(2)+'px)'}function enabled(event){return (fineQuery.matches||event.pointerType==='touch')&&!reduceQuery.matches}function onMove(event){if(!live)return;x=event.clientX-rect.left;y=event.clientY-rect.top;if(!frame)frame=requestAnimationFrame(render)}function onEnter(event){if(!enabled(event))return;measure();live=true;onMove(event)}function reset(){live=false;if(frame){cancelAnimationFrame(frame);frame=0}d1.style.transform='';d2.style.transform='';rect=null}button.addEventListener('pointerenter',onEnter);button.addEventListener('pointermove',onMove);button.addEventListener('pointerleave',reset);button.addEventListener('pointercancel',reset);window.addEventListener('resize',reset);window.addEventListener('scroll',reset,true)})})();</script>`,
 };

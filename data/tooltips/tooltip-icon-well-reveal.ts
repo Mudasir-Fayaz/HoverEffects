@@ -131,7 +131,7 @@ export default function TooltipIconWellReveal() {
         setOpen(true);
         return;
       }
-      if (state.hover && finePointer.matches) {
+      if (state.hover) {
         window.clearTimeout(state.timer);
         state.timer = window.setTimeout(() => {
           state.timer = 0;
@@ -146,15 +146,27 @@ export default function TooltipIconWellReveal() {
       if (!state.hover && !state.focus) setOpen(false);
     };
 
-    const onPointerEnter = () => {
-      if (!finePointer.matches) return;
+    const onPointerEnter = (event: PointerEvent) => {
+      if (!finePointer.matches && event.pointerType !== "touch") return;
       state.hover = true;
       state.suppressed = false;
       maybeOpen();
     };
-    const onPointerLeave = () => {
+    const onPointerLeave = (event: PointerEvent) => {
       state.hover = false;
       state.suppressed = false;
+      if (event.pointerType === "touch") {
+        // Touch pointers vanish on release. Wait a beat so the tap
+        // activation layer can re-enter before the bubble closes.
+        window.clearTimeout(state.timer);
+        state.timer = window.setTimeout(() => {
+          state.timer = 0;
+          // A tap focuses the trigger, but on touch the bubble should close
+          // with the activation window — not stay pinned by that focus.
+          if (!state.hover) setOpen(false);
+        }, 420);
+        return;
+      }
       maybeClose();
     };
     const onFocusIn = () => {
@@ -202,5 +214,5 @@ export default function TooltipIconWellReveal() {
         <a class="tip-trigger" href="https://example.com" aria-describedby="tooltip-icon-well-reveal-tip22-bubble">Data residency</a>
         <span class="tip-bubble" id="tooltip-icon-well-reveal-tip22-bubble" role="tooltip"><span class="tip-text"><span class="tip-well"><i class="tip-well-bg" aria-hidden="true"></i><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1.8 13.5 4v4.2c0 3-2.3 4.9-5.5 6-3.2-1.1-5.5-3-5.5-6V4z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></span> EU workspaces store data in Frankfurt.</span></span>
       </div>
-<script>(function(){'use strict';var root=document.querySelector('.he-tooltip-icon-well-reveal');if(!root)return;var trigger=root.querySelector('.tip-trigger');var bubble=root.querySelector('.tip-bubble');if(!trigger||!bubble)return;var finePointer=matchMedia('(hover: hover) and (pointer: fine)');var HOVER_DELAY=80;var enabled=true;var state={hover:false,focus:false,suppressed:false,timer:0,open:false};var hook=null;function setOpen(next){if(state.open===next)return;state.open=next;bubble.classList.toggle('is-open',next);if(hook)hook(next)}function maybeOpen(){if(!enabled||state.suppressed)return;if(state.focus){setOpen(true);return}if(state.hover&&finePointer.matches){clearTimeout(state.timer);state.timer=setTimeout(function(){state.timer=0;if(enabled&&state.hover&&!state.suppressed)setOpen(true)},HOVER_DELAY)}}function maybeClose(){clearTimeout(state.timer);state.timer=0;if(!state.hover&&!state.focus)setOpen(false)}function onPointerEnter(){if(!finePointer.matches)return;state.hover=true;state.suppressed=false;maybeOpen()}function onPointerLeave(){state.hover=false;state.suppressed=false;maybeClose()}function onFocusIn(){state.focus=true;state.suppressed=false;maybeOpen()}function onFocusOut(){state.focus=false;state.suppressed=false;maybeClose()}function onKeydown(event){if(event.key!=='Escape'||!state.open)return;setOpen(false);if(state.hover||state.focus)state.suppressed=true}root.addEventListener('pointerenter',onPointerEnter);root.addEventListener('pointerleave',onPointerLeave);root.addEventListener('focusin',onFocusIn);root.addEventListener('focusout',onFocusOut);root.addEventListener('keydown',onKeydown);})();</script>`,
+<script>(function(){'use strict';var root=document.querySelector('.he-tooltip-icon-well-reveal');if(!root)return;var trigger=root.querySelector('.tip-trigger');var bubble=root.querySelector('.tip-bubble');if(!trigger||!bubble)return;var finePointer=matchMedia('(hover: hover) and (pointer: fine)');var HOVER_DELAY=80;var enabled=true;var state={hover:false,focus:false,suppressed:false,timer:0,open:false};var hook=null;function setOpen(next){if(state.open===next)return;state.open=next;bubble.classList.toggle('is-open',next);if(hook)hook(next)}function maybeOpen(){if(!enabled||state.suppressed)return;if(state.focus){setOpen(true);return}if(state.hover){clearTimeout(state.timer);state.timer=setTimeout(function(){state.timer=0;if(enabled&&state.hover&&!state.suppressed)setOpen(true)},HOVER_DELAY)}}function maybeClose(){clearTimeout(state.timer);state.timer=0;if(!state.hover&&!state.focus)setOpen(false)}function onPointerEnter(e){if(!finePointer.matches&&e.pointerType!=='touch')return;state.hover=true;state.suppressed=false;maybeOpen()}function onPointerLeave(e){state.hover=false;state.suppressed=false;if(e.pointerType==='touch'){clearTimeout(state.timer);state.timer=setTimeout(function(){state.timer=0;if(!state.hover)setOpen(false)},420);return}maybeClose()}function onFocusIn(){state.focus=true;state.suppressed=false;maybeOpen()}function onFocusOut(){state.focus=false;state.suppressed=false;maybeClose()}function onKeydown(event){if(event.key!=='Escape'||!state.open)return;setOpen(false);if(state.hover||state.focus)state.suppressed=true}root.addEventListener('pointerenter',onPointerEnter);root.addEventListener('pointerleave',onPointerLeave);root.addEventListener('focusin',onFocusIn);root.addEventListener('focusout',onFocusOut);root.addEventListener('keydown',onKeydown);})();</script>`,
 };

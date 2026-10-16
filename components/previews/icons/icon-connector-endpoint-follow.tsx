@@ -30,7 +30,10 @@ export default function IconConnectorEndpointFollow() {
       const ty = Math.max(-2, Math.min(2, ny * 2));
       end.style.transform = "translate(" + tx.toFixed(2) + "px," + ty.toFixed(2) + "px)";
     };
-    const enabled = () => fineQuery.matches && !reduceQuery.matches && !button.disabled;
+    const enabled = (event: PointerEvent) =>
+      (fineQuery.matches || event.pointerType === "touch") &&
+      !reduceQuery.matches &&
+      !button.disabled;
     const onMove = (event: PointerEvent) => {
       if (!live) return;
       x = event.clientX - (rect as DOMRect).left;
@@ -38,7 +41,7 @@ export default function IconConnectorEndpointFollow() {
       if (!frame) frame = requestAnimationFrame(render);
     };
     const onEnter = (event: PointerEvent) => {
-      if (!enabled() || event.pointerType === "touch") return;
+      if (!enabled(event)) return;
       measure();
       live = true;
       onMove(event);

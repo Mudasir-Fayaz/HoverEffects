@@ -61,7 +61,7 @@ export default function BadgeDirectionalWash() {
       badge.classList.remove("is-active");
     };
     const onEnter = (event: PointerEvent) => {
-      if (!fine.matches || reduce.matches || event.pointerType === "touch") return;
+      if (reduce.matches || (!fine.matches && event.pointerType !== "touch")) return;
       measure();
       pointerLive = true;
       activate(edgeFor(event.clientX, event.clientY));

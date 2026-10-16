@@ -96,10 +96,12 @@ export default function BtnDirectionalGrain() {
       right: "translateX(-2px)",
     };
 
-    const enabled = () =>
-      fineQuery.matches && !reduceQuery.matches && !button.disabled;
+    const enabled = (event: PointerEvent) =>
+      (fineQuery.matches || event.pointerType === "touch") &&
+      !reduceQuery.matches &&
+      !button.disabled;
     const onEnter = (event: PointerEvent) => {
-      if (!enabled() || event.pointerType === "touch") return;
+      if (!enabled(event)) return;
       const rect = button.getBoundingClientRect();
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
@@ -152,5 +154,5 @@ export default function BtnDirectionalGrain() {
         </span>
         <span class="label">Apply theme</span>
       </button>
-<script>(function(){'use strict';var reduceQuery=matchMedia('(prefers-reduced-motion: reduce)');var fineQuery=matchMedia('(hover: hover) and (pointer: fine)');var OFFSETS={top:'translateY(2px)',bottom:'translateY(-2px)',left:'translateX(2px)',right:'translateX(-2px)'};document.querySelectorAll('.he-btn-directional-grain').forEach(function(button){var grain=button.querySelector('.grain');if(!grain)return;function enabled(){return fineQuery.matches&&!reduceQuery.matches&&!button.disabled}function onEnter(event){if(!enabled()||event.pointerType==='touch')return;var rect=button.getBoundingClientRect();var x=event.clientX-rect.left,y=event.clientY-rect.top;var d={top:y,right:rect.width-x,bottom:rect.height-y,left:x};var nearest='top';for(var key in d){if(d[key]<d[nearest])nearest=key}grain.style.transition='none';grain.style.transform=OFFSETS[nearest];void grain.offsetWidth;grain.style.transition='';grain.style.transform=''}function reset(){grain.style.transition='';grain.style.transform=''}button.addEventListener('pointerenter',onEnter);button.addEventListener('pointerleave',reset);button.addEventListener('pointercancel',reset)})})();</script>`,
+<script>(function(){'use strict';var reduceQuery=matchMedia('(prefers-reduced-motion: reduce)');var fineQuery=matchMedia('(hover: hover) and (pointer: fine)');var OFFSETS={top:'translateY(2px)',bottom:'translateY(-2px)',left:'translateX(2px)',right:'translateX(-2px)'};document.querySelectorAll('.he-btn-directional-grain').forEach(function(button){var grain=button.querySelector('.grain');if(!grain)return;function enabled(event){return (fineQuery.matches||event.pointerType==='touch')&&!reduceQuery.matches&&!button.disabled}function onEnter(event){if(!enabled(event))return;var rect=button.getBoundingClientRect();var x=event.clientX-rect.left,y=event.clientY-rect.top;var d={top:y,right:rect.width-x,bottom:rect.height-y,left:x};var nearest='top';for(var key in d){if(d[key]<d[nearest])nearest=key}grain.style.transition='none';grain.style.transform=OFFSETS[nearest];void grain.offsetWidth;grain.style.transition='';grain.style.transform=''}function reset(){grain.style.transition='';grain.style.transform=''}button.addEventListener('pointerenter',onEnter);button.addEventListener('pointerleave',reset);button.addEventListener('pointercancel',reset)})})();</script>`,
 };

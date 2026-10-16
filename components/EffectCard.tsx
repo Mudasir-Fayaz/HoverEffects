@@ -41,8 +41,6 @@ export default function EffectCard({
   highlighted,
 }: EffectCardProps) {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [touchHover, setTouchHover] = useState(false);
-  const touchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const previewDialogRef = useRef<HTMLDivElement>(null);
   const previewCloseRef = useRef<HTMLButtonElement>(null);
   const { isBookmarked, toggleBookmark } = useBookmarks();
@@ -102,19 +100,9 @@ export default function EffectCard({
     previewCloseRef,
   );
 
-  const handleTouchStart = useCallback(() => {
-    if (touchTimer.current) clearTimeout(touchTimer.current);
-    setTouchHover(true);
-  }, []);
-
-  const handleTouchEnd = useCallback(() => {
-    touchTimer.current = setTimeout(() => setTouchHover(false), 600);
-  }, []);
-
   useEffect(() => {
     return () => {
       if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
-      if (touchTimer.current) clearTimeout(touchTimer.current);
     };
   }, []);
 
@@ -126,10 +114,7 @@ export default function EffectCard({
       <div
         id={effect.id}
         className={`group relative bg-[var(--site-surface)] border border-[var(--site-border)] overflow-hidden scroll-mt-24 outline-none
-            ${touchHover ? "touch-active" : ""}
             ${highlighted ? "border-[var(--site-accent-border)]" : ""}`}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
       >
         {/* Header — title always visible, icons on hover (desktop) / always visible (mobile) */}
         <div className="flex items-center justify-between gap-3 bg-[var(--site-surface-subtle)] px-3 py-2 text-[var(--site-text-muted)]">
@@ -139,7 +124,7 @@ export default function EffectCard({
             </h3>
           </div>
 
-          <div className="flex items-center gap-1 shrink-0 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 transition-opacity duration-150">
+          <div className="effect-card-actions flex items-center gap-1 shrink-0 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 transition-opacity duration-150">
             <Tooltip label="Maximize">
               <button
                 onClick={() => setIsPreviewOpen(true)}

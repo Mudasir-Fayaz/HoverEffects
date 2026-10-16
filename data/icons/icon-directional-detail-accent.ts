@@ -74,9 +74,12 @@ export default function IconDirectionalDetailAccent() {
     const reduceQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     const fineQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
     let rect: DOMRect | null = null;
-    const enabled = () => fineQuery.matches && !reduceQuery.matches && !button.disabled;
+    const enabled = (event: PointerEvent) =>
+      (fineQuery.matches || event.pointerType === "touch") &&
+      !reduceQuery.matches &&
+      !button.disabled;
     const onEnter = (event: PointerEvent) => {
-      if (!enabled() || event.pointerType === "touch") return;
+      if (!enabled(event)) return;
       rect = button.getBoundingClientRect();
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
@@ -143,5 +146,5 @@ export default function IconDirectionalDetailAccent() {
           <path class="hi34-r hi34-bl" d="M7.8 19.4H4.6v-3.2" stroke="var(--line-strong)" stroke-width="1.6" stroke-linecap="round"/>
         </svg>
       </button>
-<script>(function(){'use strict';var reduceQuery=matchMedia('(prefers-reduced-motion: reduce)'),fineQuery=matchMedia('(hover: hover) and (pointer: fine)');document.querySelectorAll('.he-icon-directional-detail-accent').forEach(function(button){var rect=null;function enabled(){return fineQuery.matches&&!reduceQuery.matches}function onEnter(event){if(!enabled()||event.pointerType==='touch')return;rect=button.getBoundingClientRect();var x=event.clientX-rect.left,y=event.clientY-rect.top,d={top:y,right:rect.width-x,bottom:rect.height-y,left:x},nearest='top';for(var key in d){if(d[key]<d[nearest])nearest=key}button.setAttribute('data-region',nearest)}function reset(){rect=null;button.removeAttribute('data-region')}button.addEventListener('pointerenter',onEnter);button.addEventListener('pointerleave',reset);button.addEventListener('pointercancel',reset);button.addEventListener('focusin',function(){button.setAttribute('data-region','top')});button.addEventListener('focusout',function(){button.removeAttribute('data-region')});window.addEventListener('resize',reset)})})();</script>`,
+<script>(function(){'use strict';var reduceQuery=matchMedia('(prefers-reduced-motion: reduce)'),fineQuery=matchMedia('(hover: hover) and (pointer: fine)');document.querySelectorAll('.he-icon-directional-detail-accent').forEach(function(button){var rect=null;function enabled(event){return (fineQuery.matches||event.pointerType==='touch')&&!reduceQuery.matches}function onEnter(event){if(!enabled(event))return;rect=button.getBoundingClientRect();var x=event.clientX-rect.left,y=event.clientY-rect.top,d={top:y,right:rect.width-x,bottom:rect.height-y,left:x},nearest='top';for(var key in d){if(d[key]<d[nearest])nearest=key}button.setAttribute('data-region',nearest)}function reset(){rect=null;button.removeAttribute('data-region')}button.addEventListener('pointerenter',onEnter);button.addEventListener('pointerleave',reset);button.addEventListener('pointercancel',reset);button.addEventListener('focusin',function(){button.setAttribute('data-region','top')});button.addEventListener('focusout',function(){button.removeAttribute('data-region')});window.addEventListener('resize',reset)})})();</script>`,
 };

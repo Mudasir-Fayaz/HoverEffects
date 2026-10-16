@@ -69,7 +69,7 @@ export default function DirectionalOverlayCard() {
     };
 
     const onEnter = (event: PointerEvent) => {
-      if (!fine.matches || reduce.matches || event.pointerType === "touch") return;
+      if (reduce.matches || (!fine.matches && event.pointerType !== "touch")) return;
       measure();
       pointerLive = true;
       activate(edgeFor(event.clientX, event.clientY));

@@ -33,7 +33,7 @@ export default function TooltipBracketFrame() {
         setOpen(true);
         return;
       }
-      if (state.hover && finePointer.matches) {
+      if (state.hover) {
         window.clearTimeout(state.timer);
         state.timer = window.setTimeout(() => {
           state.timer = 0;
@@ -48,15 +48,27 @@ export default function TooltipBracketFrame() {
       if (!state.hover && !state.focus) setOpen(false);
     };
 
-    const onPointerEnter = () => {
-      if (!finePointer.matches) return;
+    const onPointerEnter = (event: PointerEvent) => {
+      if (!finePointer.matches && event.pointerType !== "touch") return;
       state.hover = true;
       state.suppressed = false;
       maybeOpen();
     };
-    const onPointerLeave = () => {
+    const onPointerLeave = (event: PointerEvent) => {
       state.hover = false;
       state.suppressed = false;
+      if (event.pointerType === "touch") {
+        // Touch pointers vanish on release. Wait a beat so the tap
+        // activation layer can re-enter before the bubble closes.
+        window.clearTimeout(state.timer);
+        state.timer = window.setTimeout(() => {
+          state.timer = 0;
+          // A tap focuses the trigger, but on touch the bubble should close
+          // with the activation window — not stay pinned by that focus.
+          if (!state.hover) setOpen(false);
+        }, 420);
+        return;
+      }
       maybeClose();
     };
     const onFocusIn = () => {

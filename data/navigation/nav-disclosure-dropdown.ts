@@ -94,12 +94,14 @@ export default function NavDisclosureDropdown() {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
     let hoverTimer = 0;
     let openedBy: string | null = null;
+    let touchOpenedAt = 0;
 
     const setOpen = (open: boolean, source: string) => {
       const isOpen = disc.getAttribute("aria-expanded") === "true";
       if (open === isOpen) return;
       disc.setAttribute("aria-expanded", String(open));
       openedBy = open ? source : null;
+      if (open && source === "touch") touchOpenedAt = performance.now();
       if (open) {
         panel.hidden = false;
         requestAnimationFrame(() => panel.classList.add("is-visible"));
@@ -111,19 +113,30 @@ export default function NavDisclosureDropdown() {
 
     panel.hidden = true;
     const handleClick = () => {
-      setOpen(disc.getAttribute("aria-expanded") !== "true", "click");
+      const isOpen = disc.getAttribute("aria-expanded") === "true";
+      // The click that belongs to the tap which just opened the panel
+      // should not toggle it straight back closed.
+      if (isOpen && performance.now() - touchOpenedAt < 450) return;
+      setOpen(!isOpen, "click");
     };
-    const handleEnter = () => {
-      if (!fine.matches || reduce.matches) return;
+    const handleEnter = (event?: PointerEvent) => {
+      if (reduce.matches || (!fine.matches && event?.pointerType !== "touch")) {
+        return;
+      }
+      const source = event?.pointerType === "touch" ? "touch" : "hover";
       window.clearTimeout(hoverTimer);
       hoverTimer = window.setTimeout(() => {
         hoverTimer = 0;
-        setOpen(true, "hover");
+        setOpen(true, source);
       }, 260);
     };
-    const handleLeave = () => {
-      window.clearTimeout(hoverTimer);
-      hoverTimer = 0;
+    const handleLeave = (event?: PointerEvent) => {
+      // Touch releases must not cancel a pending tap-open, and a menu the
+      // user just opened stays open until they tap outside it.
+      if (event?.pointerType !== "touch") {
+        window.clearTimeout(hoverTimer);
+        hoverTimer = 0;
+      }
       if (openedBy === "hover" && !item.contains(document.activeElement)) {
         setOpen(false, "hover");
       }
@@ -201,5 +214,5 @@ export default function NavDisclosureDropdown() {
           <li class="nav33-item"><a class="nav33-link" href="https://example.com">About</a></li>
         </ul>
       </nav>
-<script>(function(){var nav=document.querySelector('.he-nav-disclosure-dropdown');if(!nav)return;var disc=nav.querySelector('.nav33-disc'),panel=nav.querySelector('.nav33-panel'),item=disc?disc.closest('.nav33-item'):null;if(!disc||!panel||!item)return;var fine=matchMedia('(hover: hover) and (pointer: fine)'),reduce=matchMedia('(prefers-reduced-motion: reduce)'),hoverTimer=0,openedBy=null;function setOpen(open,source){var isOpen=disc.getAttribute('aria-expanded')==='true';if(open===isOpen)return;disc.setAttribute('aria-expanded',String(open));openedBy=open?source:null;if(open){panel.hidden=false;requestAnimationFrame(function(){panel.classList.add('is-visible')})}else{panel.classList.remove('is-visible');panel.hidden=true}}panel.hidden=true;disc.addEventListener('click',function(){setOpen(disc.getAttribute('aria-expanded')!=='true','click')});item.addEventListener('pointerenter',function(){if(!fine.matches||reduce.matches)return;clearTimeout(hoverTimer);hoverTimer=setTimeout(function(){hoverTimer=0;setOpen(true,'hover')},260)});item.addEventListener('pointerleave',function(){clearTimeout(hoverTimer);hoverTimer=0;if(openedBy==='hover'&&!item.contains(document.activeElement))setOpen(false,'hover')});item.addEventListener('focusout',function(event){if(!item.contains(event.relatedTarget)){clearTimeout(hoverTimer);if(openedBy!=='click')setOpen(false,'focus')}});nav.addEventListener('keydown',function(event){if(event.key==='Escape'&&disc.getAttribute('aria-expanded')==='true'){setOpen(false,'escape');disc.focus()}});document.addEventListener('pointerdown',function(event){if(!item.contains(event.target))setOpen(false,'outside')})})();</script>`,
+<script>(function(){var nav=document.querySelector('.he-nav-disclosure-dropdown');if(!nav)return;var disc=nav.querySelector('.nav33-disc'),panel=nav.querySelector('.nav33-panel'),item=disc?disc.closest('.nav33-item'):null;if(!disc||!panel||!item)return;var fine=matchMedia('(hover: hover) and (pointer: fine)'),reduce=matchMedia('(prefers-reduced-motion: reduce)'),hoverTimer=0,openedBy=null,touchOpenedAt=0;function setOpen(open,source){var isOpen=disc.getAttribute('aria-expanded')==='true';if(open===isOpen)return;disc.setAttribute('aria-expanded',String(open));openedBy=open?source:null;if(open&&source==='touch')touchOpenedAt=performance.now();if(open){panel.hidden=false;requestAnimationFrame(function(){panel.classList.add('is-visible')})}else{panel.classList.remove('is-visible');panel.hidden=true}}panel.hidden=true;disc.addEventListener('click',function(){var isOpen=disc.getAttribute('aria-expanded')==='true';if(isOpen&&performance.now()-touchOpenedAt<450)return;setOpen(!isOpen,'click')});item.addEventListener('pointerenter',function(event){if(reduce.matches||(!fine.matches&&event.pointerType!=='touch'))return;var source=event.pointerType==='touch'?'touch':'hover';clearTimeout(hoverTimer);hoverTimer=setTimeout(function(){hoverTimer=0;setOpen(true,source)},260)});item.addEventListener('pointerleave',function(event){if(event.pointerType!=='touch'){clearTimeout(hoverTimer);hoverTimer=0}if(openedBy==='hover'&&!item.contains(document.activeElement))setOpen(false,'hover')});item.addEventListener('focusout',function(event){if(!item.contains(event.relatedTarget)){clearTimeout(hoverTimer);if(openedBy!=='click')setOpen(false,'focus')}});nav.addEventListener('keydown',function(event){if(event.key==='Escape'&&disc.getAttribute('aria-expanded')==='true'){setOpen(false,'escape');disc.focus()}});document.addEventListener('pointerdown',function(event){if(!item.contains(event.target))setOpen(false,'outside')})})();</script>`,
 };

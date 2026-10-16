@@ -20,10 +20,12 @@ export default function BtnDirectionalGrain() {
       right: "translateX(-2px)",
     };
 
-    const enabled = () =>
-      fineQuery.matches && !reduceQuery.matches && !button.disabled;
+    const enabled = (event: PointerEvent) =>
+      (fineQuery.matches || event.pointerType === "touch") &&
+      !reduceQuery.matches &&
+      !button.disabled;
     const onEnter = (event: PointerEvent) => {
-      if (!enabled() || event.pointerType === "touch") return;
+      if (!enabled(event)) return;
       const rect = button.getBoundingClientRect();
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;

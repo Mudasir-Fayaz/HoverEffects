@@ -27,15 +27,17 @@ export default function BtnLocalLight() {
       const nx = Math.max(-1, Math.min(1, (x / rect.width) * 2 - 1));
       light.style.transform = "translateX(" + (nx * 6).toFixed(2) + "px)";
     };
-    const enabled = () =>
-      fineQuery.matches && !reduceQuery.matches && !button.disabled;
+    const enabled = (event: PointerEvent) =>
+      (fineQuery.matches || event.pointerType === "touch") &&
+      !reduceQuery.matches &&
+      !button.disabled;
     const onMove = (event: PointerEvent) => {
       if (!live) return;
       x = event.clientX - (rect as DOMRect).left;
       if (!frame) frame = requestAnimationFrame(render);
     };
     const onEnter = (event: PointerEvent) => {
-      if (!enabled() || event.pointerType === "touch") return;
+      if (!enabled(event)) return;
       measure();
       live = true;
       onMove(event);

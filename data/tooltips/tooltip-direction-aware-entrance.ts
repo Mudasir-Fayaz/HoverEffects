@@ -122,7 +122,7 @@ export default function TooltipDirectionAwareEntrance() {
         setOpen(true);
         return;
       }
-      if (state.hover && finePointer.matches) {
+      if (state.hover) {
         window.clearTimeout(state.timer);
         state.timer = window.setTimeout(() => {
           state.timer = 0;
@@ -137,15 +137,27 @@ export default function TooltipDirectionAwareEntrance() {
       if (!state.hover && !state.focus) setOpen(false);
     };
 
-    const onPointerEnter = () => {
-      if (!finePointer.matches) return;
+    const onPointerEnter = (event: PointerEvent) => {
+      if (!finePointer.matches && event.pointerType !== "touch") return;
       state.hover = true;
       state.suppressed = false;
       maybeOpen();
     };
-    const onPointerLeave = () => {
+    const onPointerLeave = (event: PointerEvent) => {
       state.hover = false;
       state.suppressed = false;
+      if (event.pointerType === "touch") {
+        // Touch pointers vanish on release. Wait a beat so the tap
+        // activation layer can re-enter before the bubble closes.
+        window.clearTimeout(state.timer);
+        state.timer = window.setTimeout(() => {
+          state.timer = 0;
+          // A tap focuses the trigger, but on touch the bubble should close
+          // with the activation window — not stay pinned by that focus.
+          if (!state.hover) setOpen(false);
+        }, 420);
+        return;
+      }
       maybeClose();
     };
     const onFocusIn = () => {
@@ -182,7 +194,7 @@ export default function TooltipDirectionAwareEntrance() {
     };
 
     const onTriggerEnter = (event: PointerEvent) => {
-      if (!finePointer.matches) return;
+      if (!finePointer.matches && event.pointerType !== "touch") return;
       const rect = trigger.getBoundingClientRect();
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
@@ -232,5 +244,5 @@ export default function TooltipDirectionAwareEntrance() {
         <a class="tip-trigger" href="https://example.com" aria-describedby="tooltip-direction-aware-entrance-tip33-bubble">Rules playground</a>
         <span class="tip-bubble" id="tooltip-direction-aware-entrance-tip33-bubble" role="tooltip"><span class="tip-text">Write expressions, preview matches and promote a rule to production in one pass.</span><i class="tip-arrow" aria-hidden="true"></i></span>
       </div>
-<script>(function(){'use strict';var root=document.querySelector('.he-tooltip-direction-aware-entrance');if(!root)return;var trigger=root.querySelector('.tip-trigger');var bubble=root.querySelector('.tip-bubble');if(!trigger||!bubble)return;var finePointer=matchMedia('(hover: hover) and (pointer: fine)');var HOVER_DELAY=80;var enabled=true;var state={hover:false,focus:false,suppressed:false,timer:0,open:false};var hook=null;function setOpen(next){if(state.open===next)return;state.open=next;bubble.classList.toggle('is-open',next);if(hook)hook(next)}function maybeOpen(){if(!enabled||state.suppressed)return;if(state.focus){setOpen(true);return}if(state.hover&&finePointer.matches){clearTimeout(state.timer);state.timer=setTimeout(function(){state.timer=0;if(enabled&&state.hover&&!state.suppressed)setOpen(true)},HOVER_DELAY)}}function maybeClose(){clearTimeout(state.timer);state.timer=0;if(!state.hover&&!state.focus)setOpen(false)}function onPointerEnter(){if(!finePointer.matches)return;state.hover=true;state.suppressed=false;maybeOpen()}function onPointerLeave(){state.hover=false;state.suppressed=false;maybeClose()}function onFocusIn(){state.focus=true;state.suppressed=false;maybeOpen()}function onFocusOut(){state.focus=false;state.suppressed=false;maybeClose()}function onKeydown(event){if(event.key!=='Escape'||!state.open)return;setOpen(false);if(state.hover||state.focus)state.suppressed=true}var VECTORS={top:['0px','-6px'],bottom:['0px','6px'],left:['-6px','0px'],right:['6px','0px']};function setVector(vector){bubble.style.setProperty('--tx',vector[0]);bubble.style.setProperty('--ty',vector[1])}trigger.addEventListener('pointerenter',function(event){if(!finePointer.matches)return;var rect=trigger.getBoundingClientRect(),x=event.clientX-rect.left,y=event.clientY-rect.top,d={top:y,right:rect.width-x,bottom:rect.height-y,left:x},nearest='bottom';for(var key in d){if(d[key]<d[nearest])nearest=key}setVector(VECTORS[nearest])});trigger.addEventListener('focusin',function(){if(state.hover)return;setVector(['0px','4px'])});root.addEventListener('pointerenter',onPointerEnter);root.addEventListener('pointerleave',onPointerLeave);root.addEventListener('focusin',onFocusIn);root.addEventListener('focusout',onFocusOut);root.addEventListener('keydown',onKeydown);})();</script>`,
+<script>(function(){'use strict';var root=document.querySelector('.he-tooltip-direction-aware-entrance');if(!root)return;var trigger=root.querySelector('.tip-trigger');var bubble=root.querySelector('.tip-bubble');if(!trigger||!bubble)return;var finePointer=matchMedia('(hover: hover) and (pointer: fine)');var HOVER_DELAY=80;var enabled=true;var state={hover:false,focus:false,suppressed:false,timer:0,open:false};var hook=null;function setOpen(next){if(state.open===next)return;state.open=next;bubble.classList.toggle('is-open',next);if(hook)hook(next)}function maybeOpen(){if(!enabled||state.suppressed)return;if(state.focus){setOpen(true);return}if(state.hover){clearTimeout(state.timer);state.timer=setTimeout(function(){state.timer=0;if(enabled&&state.hover&&!state.suppressed)setOpen(true)},HOVER_DELAY)}}function maybeClose(){clearTimeout(state.timer);state.timer=0;if(!state.hover&&!state.focus)setOpen(false)}function onPointerEnter(e){if(!finePointer.matches&&e.pointerType!=='touch')return;state.hover=true;state.suppressed=false;maybeOpen()}function onPointerLeave(e){state.hover=false;state.suppressed=false;if(e.pointerType==='touch'){clearTimeout(state.timer);state.timer=setTimeout(function(){state.timer=0;if(!state.hover)setOpen(false)},420);return}maybeClose()}function onFocusIn(){state.focus=true;state.suppressed=false;maybeOpen()}function onFocusOut(){state.focus=false;state.suppressed=false;maybeClose()}function onKeydown(event){if(event.key!=='Escape'||!state.open)return;setOpen(false);if(state.hover||state.focus)state.suppressed=true}var VECTORS={top:['0px','-6px'],bottom:['0px','6px'],left:['-6px','0px'],right:['6px','0px']};function setVector(vector){bubble.style.setProperty('--tx',vector[0]);bubble.style.setProperty('--ty',vector[1])}trigger.addEventListener('pointerenter',function(event){if(!finePointer.matches&&event.pointerType!=='touch')return;var rect=trigger.getBoundingClientRect(),x=event.clientX-rect.left,y=event.clientY-rect.top,d={top:y,right:rect.width-x,bottom:rect.height-y,left:x},nearest='bottom';for(var key in d){if(d[key]<d[nearest])nearest=key}setVector(VECTORS[nearest])});trigger.addEventListener('focusin',function(){if(state.hover)return;setVector(['0px','4px'])});root.addEventListener('pointerenter',onPointerEnter);root.addEventListener('pointerleave',onPointerLeave);root.addEventListener('focusin',onFocusIn);root.addEventListener('focusout',onFocusOut);root.addEventListener('keydown',onKeydown);})();</script>`,
 };

@@ -108,15 +108,17 @@ export default function BtnLocalLight() {
       const nx = Math.max(-1, Math.min(1, (x / rect.width) * 2 - 1));
       light.style.transform = "translateX(" + (nx * 6).toFixed(2) + "px)";
     };
-    const enabled = () =>
-      fineQuery.matches && !reduceQuery.matches && !button.disabled;
+    const enabled = (event: PointerEvent) =>
+      (fineQuery.matches || event.pointerType === "touch") &&
+      !reduceQuery.matches &&
+      !button.disabled;
     const onMove = (event: PointerEvent) => {
       if (!live) return;
       x = event.clientX - (rect as DOMRect).left;
       if (!frame) frame = requestAnimationFrame(render);
     };
     const onEnter = (event: PointerEvent) => {
-      if (!enabled() || event.pointerType === "touch") return;
+      if (!enabled(event)) return;
       measure();
       live = true;
       onMove(event);
@@ -166,5 +168,5 @@ export default function BtnLocalLight() {
         </span>
         <span class="label">Open dashboard</span>
       </button>
-<script>(function(){'use strict';var reduceQuery=matchMedia('(prefers-reduced-motion: reduce)');var fineQuery=matchMedia('(hover: hover) and (pointer: fine)');document.querySelectorAll('.he-btn-local-light').forEach(function(button){var light=button.querySelector('.light');if(!light)return;var rect=null,frame=0,live=false,x=0;function measure(){rect=button.getBoundingClientRect()}function render(){frame=0;if(!live||!rect)return;var nx=Math.max(-1,Math.min(1,(x/rect.width)*2-1));light.style.transform='translateX('+(nx*6).toFixed(2)+'px)'}function enabled(){return fineQuery.matches&&!reduceQuery.matches&&!button.disabled}function onMove(event){if(!live)return;x=event.clientX-rect.left;if(!frame)frame=requestAnimationFrame(render)}function onEnter(event){if(!enabled()||event.pointerType==='touch')return;measure();live=true;onMove(event)}function reset(){live=false;if(frame){cancelAnimationFrame(frame);frame=0}light.style.transform='';rect=null}button.addEventListener('pointerenter',onEnter);button.addEventListener('pointermove',onMove);button.addEventListener('pointerleave',reset);button.addEventListener('pointercancel',reset);window.addEventListener('resize',reset);window.addEventListener('scroll',reset,true)})})();</script>`,
+<script>(function(){'use strict';var reduceQuery=matchMedia('(prefers-reduced-motion: reduce)');var fineQuery=matchMedia('(hover: hover) and (pointer: fine)');document.querySelectorAll('.he-btn-local-light').forEach(function(button){var light=button.querySelector('.light');if(!light)return;var rect=null,frame=0,live=false,x=0;function measure(){rect=button.getBoundingClientRect()}function render(){frame=0;if(!live||!rect)return;var nx=Math.max(-1,Math.min(1,(x/rect.width)*2-1));light.style.transform='translateX('+(nx*6).toFixed(2)+'px)'}function enabled(event){return (fineQuery.matches||event.pointerType==='touch')&&!reduceQuery.matches&&!button.disabled}function onMove(event){if(!live)return;x=event.clientX-rect.left;if(!frame)frame=requestAnimationFrame(render)}function onEnter(event){if(!enabled(event))return;measure();live=true;onMove(event)}function reset(){live=false;if(frame){cancelAnimationFrame(frame);frame=0}light.style.transform='';rect=null}button.addEventListener('pointerenter',onEnter);button.addEventListener('pointermove',onMove);button.addEventListener('pointerleave',reset);button.addEventListener('pointercancel',reset);window.addEventListener('resize',reset);window.addEventListener('scroll',reset,true)})})();</script>`,
 };

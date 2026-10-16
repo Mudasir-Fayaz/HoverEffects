@@ -16,6 +16,7 @@ export default function NavMenuAimFlyout() {
     let hoverTimer = 0;
     let switchTimer = 0;
     let openRow: HTMLElement | null = null;
+    let touchOpenedAt = 0;
     const trajectory = { dx: 0, dy: 0, t: 0, x: 0, y: 0 };
 
     const panelOf = (row: HTMLElement) =>
@@ -35,6 +36,7 @@ export default function NavMenuAimFlyout() {
         requestAnimationFrame(() => panel.classList.add("is-visible"));
         openRow = row;
         row.setAttribute("data-opened-by", source || "");
+        if (source === "touch") touchOpenedAt = performance.now();
       } else {
         panel.classList.remove("is-visible");
         panel.hidden = true;
@@ -73,18 +75,19 @@ export default function NavMenuAimFlyout() {
 
     const rowEntries = rows.map((row) => {
       const button = buttonOf(row);
-      const enter = () => {
-        if (!fine.matches) return;
+      const enter = (event?: PointerEvent) => {
+        if (!fine.matches && event?.pointerType !== "touch") return;
+        const source = event?.pointerType === "touch" ? "touch" : "hover";
         if (openRow && openRow !== row && movingTowardPanel(openRow)) {
           window.clearTimeout(switchTimer);
           switchTimer = window.setTimeout(() => {
             switchTimer = 0;
-            if (openRow !== row) openExclusive(row, "hover");
+            if (openRow !== row) openExclusive(row, source);
           }, 180);
           return;
         }
         window.clearTimeout(switchTimer);
-        openExclusive(row, "hover");
+        openExclusive(row, source);
       };
       const leave = () => {
         window.clearTimeout(hoverTimer);
@@ -103,6 +106,9 @@ export default function NavMenuAimFlyout() {
         ? () => {
             const isOpen = button.getAttribute("aria-expanded") === "true";
             if (isOpen) {
+              // The click that belongs to the tap which just opened the
+              // panel should not toggle it straight back closed.
+              if (performance.now() - touchOpenedAt < 450) return;
               setRow(row, false);
             } else {
               openExclusive(row, "click");

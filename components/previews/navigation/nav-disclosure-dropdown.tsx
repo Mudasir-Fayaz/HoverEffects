@@ -18,12 +18,14 @@ export default function NavDisclosureDropdown() {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
     let hoverTimer = 0;
     let openedBy: string | null = null;
+    let touchOpenedAt = 0;
 
     const setOpen = (open: boolean, source: string) => {
       const isOpen = disc.getAttribute("aria-expanded") === "true";
       if (open === isOpen) return;
       disc.setAttribute("aria-expanded", String(open));
       openedBy = open ? source : null;
+      if (open && source === "touch") touchOpenedAt = performance.now();
       if (open) {
         panel.hidden = false;
         requestAnimationFrame(() => panel.classList.add("is-visible"));
@@ -35,19 +37,30 @@ export default function NavDisclosureDropdown() {
 
     panel.hidden = true;
     const handleClick = () => {
-      setOpen(disc.getAttribute("aria-expanded") !== "true", "click");
+      const isOpen = disc.getAttribute("aria-expanded") === "true";
+      // The click that belongs to the tap which just opened the panel
+      // should not toggle it straight back closed.
+      if (isOpen && performance.now() - touchOpenedAt < 450) return;
+      setOpen(!isOpen, "click");
     };
-    const handleEnter = () => {
-      if (!fine.matches || reduce.matches) return;
+    const handleEnter = (event?: PointerEvent) => {
+      if (reduce.matches || (!fine.matches && event?.pointerType !== "touch")) {
+        return;
+      }
+      const source = event?.pointerType === "touch" ? "touch" : "hover";
       window.clearTimeout(hoverTimer);
       hoverTimer = window.setTimeout(() => {
         hoverTimer = 0;
-        setOpen(true, "hover");
+        setOpen(true, source);
       }, 260);
     };
-    const handleLeave = () => {
-      window.clearTimeout(hoverTimer);
-      hoverTimer = 0;
+    const handleLeave = (event?: PointerEvent) => {
+      // Touch releases must not cancel a pending tap-open, and a menu the
+      // user just opened stays open until they tap outside it.
+      if (event?.pointerType !== "touch") {
+        window.clearTimeout(hoverTimer);
+        hoverTimer = 0;
+      }
       if (openedBy === "hover" && !item.contains(document.activeElement)) {
         setOpen(false, "hover");
       }

@@ -99,6 +99,7 @@ export default function NavMenuAimFlyout() {
     let hoverTimer = 0;
     let switchTimer = 0;
     let openRow: HTMLElement | null = null;
+    let touchOpenedAt = 0;
     const trajectory = { dx: 0, dy: 0, t: 0, x: 0, y: 0 };
 
     const panelOf = (row: HTMLElement) =>
@@ -118,6 +119,7 @@ export default function NavMenuAimFlyout() {
         requestAnimationFrame(() => panel.classList.add("is-visible"));
         openRow = row;
         row.setAttribute("data-opened-by", source || "");
+        if (source === "touch") touchOpenedAt = performance.now();
       } else {
         panel.classList.remove("is-visible");
         panel.hidden = true;
@@ -156,18 +158,19 @@ export default function NavMenuAimFlyout() {
 
     const rowEntries = rows.map((row) => {
       const button = buttonOf(row);
-      const enter = () => {
-        if (!fine.matches) return;
+      const enter = (event?: PointerEvent) => {
+        if (!fine.matches && event?.pointerType !== "touch") return;
+        const source = event?.pointerType === "touch" ? "touch" : "hover";
         if (openRow && openRow !== row && movingTowardPanel(openRow)) {
           window.clearTimeout(switchTimer);
           switchTimer = window.setTimeout(() => {
             switchTimer = 0;
-            if (openRow !== row) openExclusive(row, "hover");
+            if (openRow !== row) openExclusive(row, source);
           }, 180);
           return;
         }
         window.clearTimeout(switchTimer);
-        openExclusive(row, "hover");
+        openExclusive(row, source);
       };
       const leave = () => {
         window.clearTimeout(hoverTimer);
@@ -186,6 +189,9 @@ export default function NavMenuAimFlyout() {
         ? () => {
             const isOpen = button.getAttribute("aria-expanded") === "true";
             if (isOpen) {
+              // The click that belongs to the tap which just opened the
+              // panel should not toggle it straight back closed.
+              if (performance.now() - touchOpenedAt < 450) return;
               setRow(row, false);
             } else {
               openExclusive(row, "click");
@@ -294,5 +300,5 @@ export default function NavMenuAimFlyout() {
           </li>
         </ul>
       </nav>
-<script>(function(){var nav=document.querySelector('.he-nav-menu-aim-flyout');if(!nav)return;var rows=Array.prototype.slice.call(nav.querySelectorAll('.nav35-row'));if(!rows.length)return;var fine=matchMedia('(hover: hover) and (pointer: fine)'),hoverTimer=0,switchTimer=0,openRow=null,trajectory={dx:0,dy:0,t:0,x:0,y:0};function panelOf(row){return row.querySelector('.nav35-panel')}function buttonOf(row){return row.querySelector('.nav35-disc')}function setRow(row,open,source){var panel=panelOf(row),button=buttonOf(row);if(!panel||!button)return;var isOpen=button.getAttribute('aria-expanded')==='true';if(open===isOpen)return;button.setAttribute('aria-expanded',String(open));if(open){panel.hidden=false;requestAnimationFrame(function(){panel.classList.add('is-visible')});openRow=row;row.setAttribute('data-opened-by',source||'')}else{panel.classList.remove('is-visible');panel.hidden=true;if(openRow===row)openRow=null;row.removeAttribute('data-opened-by')}}rows.forEach(function(row){var panel=panelOf(row),button=buttonOf(row);if(panel){panel.hidden=true;panel.classList.remove('is-visible')}if(button)button.setAttribute('aria-expanded','false')});nav.addEventListener('pointermove',function(event){var dx=event.clientX-trajectory.x,dy=event.clientY-trajectory.y;if(dx||dy){trajectory.dx=dx;trajectory.dy=dy;trajectory.t=performance.now();trajectory.x=event.clientX;trajectory.y=event.clientY}},{passive:true});function movingTowardPanel(row){var panel=panelOf(row);if(!panel||panel.hidden)return false;if(performance.now()-trajectory.t>220)return false;var rect=panel.getBoundingClientRect(),vx=(rect.left+rect.width/2)-trajectory.x,vy=(rect.top+rect.height/2)-trajectory.y;return(vx*trajectory.dx+vy*trajectory.dy)>0}function openExclusive(row,source){if(openRow===row)return;var previous=openRow;if(previous)setRow(previous,false);setRow(row,true,source)}rows.forEach(function(row){var button=buttonOf(row);row.addEventListener('pointerenter',function(){if(!fine.matches)return;if(openRow&&openRow!==row&&movingTowardPanel(openRow)){clearTimeout(switchTimer);switchTimer=setTimeout(function(){switchTimer=0;if(openRow!==row)openExclusive(row,'hover')},180);return}clearTimeout(switchTimer);openExclusive(row,'hover')});row.addEventListener('pointerleave',function(){clearTimeout(hoverTimer);hoverTimer=setTimeout(function(){hoverTimer=0;if(openRow===row&&row.getAttribute('data-opened-by')==='hover'&&!row.contains(document.activeElement))setRow(row,false)},160)});if(button){button.addEventListener('click',function(){var isOpen=button.getAttribute('aria-expanded')==='true';if(isOpen){setRow(row,false)}else{openExclusive(row,'click')}})}});nav.addEventListener('keydown',function(event){if(event.key!=='Escape'||!openRow)return;var row=openRow;setRow(row,false);var button=buttonOf(row);if(button)button.focus()});document.addEventListener('pointerdown',function(event){if(!nav.contains(event.target)&&openRow)setRow(openRow,false)})})();</script>`,
+<script>(function(){var nav=document.querySelector('.he-nav-menu-aim-flyout');if(!nav)return;var rows=Array.prototype.slice.call(nav.querySelectorAll('.nav35-row'));if(!rows.length)return;var fine=matchMedia('(hover: hover) and (pointer: fine)'),hoverTimer=0,switchTimer=0,openRow=null,touchOpenedAt=0,trajectory={dx:0,dy:0,t:0,x:0,y:0};function panelOf(row){return row.querySelector('.nav35-panel')}function buttonOf(row){return row.querySelector('.nav35-disc')}function setRow(row,open,source){var panel=panelOf(row),button=buttonOf(row);if(!panel||!button)return;var isOpen=button.getAttribute('aria-expanded')==='true';if(open===isOpen)return;button.setAttribute('aria-expanded',String(open));if(open){panel.hidden=false;requestAnimationFrame(function(){panel.classList.add('is-visible')});openRow=row;row.setAttribute('data-opened-by',source||'');if(source==='touch')touchOpenedAt=performance.now()}else{panel.classList.remove('is-visible');panel.hidden=true;if(openRow===row)openRow=null;row.removeAttribute('data-opened-by')}}rows.forEach(function(row){var panel=panelOf(row),button=buttonOf(row);if(panel){panel.hidden=true;panel.classList.remove('is-visible')}if(button)button.setAttribute('aria-expanded','false')});nav.addEventListener('pointermove',function(event){var dx=event.clientX-trajectory.x,dy=event.clientY-trajectory.y;if(dx||dy){trajectory.dx=dx;trajectory.dy=dy;trajectory.t=performance.now();trajectory.x=event.clientX;trajectory.y=event.clientY}},{passive:true});function movingTowardPanel(row){var panel=panelOf(row);if(!panel||panel.hidden)return false;if(performance.now()-trajectory.t>220)return false;var rect=panel.getBoundingClientRect(),vx=(rect.left+rect.width/2)-trajectory.x,vy=(rect.top+rect.height/2)-trajectory.y;return(vx*trajectory.dx+vy*trajectory.dy)>0}function openExclusive(row,source){if(openRow===row)return;var previous=openRow;if(previous)setRow(previous,false);setRow(row,true,source)}rows.forEach(function(row){var button=buttonOf(row);row.addEventListener('pointerenter',function(event){if(!fine.matches&&event.pointerType!=='touch')return;var source=event.pointerType==='touch'?'touch':'hover';if(openRow&&openRow!==row&&movingTowardPanel(openRow)){clearTimeout(switchTimer);switchTimer=setTimeout(function(){switchTimer=0;if(openRow!==row)openExclusive(row,source)},180);return}clearTimeout(switchTimer);openExclusive(row,source)});row.addEventListener('pointerleave',function(){clearTimeout(hoverTimer);hoverTimer=setTimeout(function(){hoverTimer=0;if(openRow===row&&row.getAttribute('data-opened-by')==='hover'&&!row.contains(document.activeElement))setRow(row,false)},160)});if(button){button.addEventListener('click',function(){var isOpen=button.getAttribute('aria-expanded')==='true';if(isOpen){if(performance.now()-touchOpenedAt<450)return;setRow(row,false)}else{openExclusive(row,'click')}})}});nav.addEventListener('keydown',function(event){if(event.key!=='Escape'||!openRow)return;var row=openRow;setRow(row,false);var button=buttonOf(row);if(button)button.focus()});document.addEventListener('pointerdown',function(event){if(!nav.contains(event.target)&&openRow)setRow(openRow,false)})})();</script>`,
 };

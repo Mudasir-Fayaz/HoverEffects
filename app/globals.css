@@ -274,6 +274,17 @@ html.no-site-transition .site-shell :not(.effect-preview-root, .effect-preview-r
   color-scheme: only light;
 }
 
+/*
+ * Touch devices never fire group-hover, so the card action row (maximize,
+ * bookmark, copy, share) has to stay visible instead of being revealed by
+ * hovering the card header.
+ */
+@media (hover: none) {
+  .effect-card-actions {
+    opacity: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .site-shell *,
   .site-shell *::before,

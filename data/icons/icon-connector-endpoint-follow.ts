@@ -85,7 +85,10 @@ export default function IconConnectorEndpointFollow() {
       const ty = Math.max(-2, Math.min(2, ny * 2));
       end.style.transform = "translate(" + tx.toFixed(2) + "px," + ty.toFixed(2) + "px)";
     };
-    const enabled = () => fineQuery.matches && !reduceQuery.matches && !button.disabled;
+    const enabled = (event: PointerEvent) =>
+      (fineQuery.matches || event.pointerType === "touch") &&
+      !reduceQuery.matches &&
+      !button.disabled;
     const onMove = (event: PointerEvent) => {
       if (!live) return;
       x = event.clientX - (rect as DOMRect).left;
@@ -93,7 +96,7 @@ export default function IconConnectorEndpointFollow() {
       if (!frame) frame = requestAnimationFrame(render);
     };
     const onEnter = (event: PointerEvent) => {
-      if (!enabled() || event.pointerType === "touch") return;
+      if (!enabled(event)) return;
       measure();
       live = true;
       onMove(event);
@@ -153,5 +156,5 @@ export default function IconConnectorEndpointFollow() {
           <circle cx="12" cy="12.2" r="1.3" fill="var(--accent-2)"/>
         </svg>
       </button>
-<script>(function(){'use strict';var reduceQuery=matchMedia('(prefers-reduced-motion: reduce)'),fineQuery=matchMedia('(hover: hover) and (pointer: fine)');document.querySelectorAll('.he-icon-connector-endpoint-follow').forEach(function(button){var end=button.querySelector('.hi35-end');if(!end)return;var rect=null,frame=0,live=false,x=0,y=0;function measure(){rect=button.getBoundingClientRect()}function render(){frame=0;if(!live||!rect)return;var nx=(x/rect.width)*2-1,ny=(y/rect.height)*2-1,tx=Math.max(-2,Math.min(2,nx*2)),ty=Math.max(-2,Math.min(2,ny*2));end.style.transform='translate('+tx.toFixed(2)+'px,'+ty.toFixed(2)+'px)'}function enabled(){return fineQuery.matches&&!reduceQuery.matches}function onMove(event){if(!live)return;x=event.clientX-rect.left;y=event.clientY-rect.top;if(!frame)frame=requestAnimationFrame(render)}function onEnter(event){if(!enabled()||event.pointerType==='touch')return;measure();live=true;onMove(event)}function reset(){live=false;if(frame){cancelAnimationFrame(frame);frame=0}end.style.transform='';rect=null}button.addEventListener('pointerenter',onEnter);button.addEventListener('pointermove',onMove);button.addEventListener('pointerleave',reset);button.addEventListener('pointercancel',reset);window.addEventListener('resize',reset);window.addEventListener('scroll',reset,true)})})();</script>`,
+<script>(function(){'use strict';var reduceQuery=matchMedia('(prefers-reduced-motion: reduce)'),fineQuery=matchMedia('(hover: hover) and (pointer: fine)');document.querySelectorAll('.he-icon-connector-endpoint-follow').forEach(function(button){var end=button.querySelector('.hi35-end');if(!end)return;var rect=null,frame=0,live=false,x=0,y=0;function measure(){rect=button.getBoundingClientRect()}function render(){frame=0;if(!live||!rect)return;var nx=(x/rect.width)*2-1,ny=(y/rect.height)*2-1,tx=Math.max(-2,Math.min(2,nx*2)),ty=Math.max(-2,Math.min(2,ny*2));end.style.transform='translate('+tx.toFixed(2)+'px,'+ty.toFixed(2)+'px)'}function enabled(event){return (fineQuery.matches||event.pointerType==='touch')&&!reduceQuery.matches}function onMove(event){if(!live)return;x=event.clientX-rect.left;y=event.clientY-rect.top;if(!frame)frame=requestAnimationFrame(render)}function onEnter(event){if(!enabled(event))return;measure();live=true;onMove(event)}function reset(){live=false;if(frame){cancelAnimationFrame(frame);frame=0}end.style.transform='';rect=null}button.addEventListener('pointerenter',onEnter);button.addEventListener('pointermove',onMove);button.addEventListener('pointerleave',reset);button.addEventListener('pointercancel',reset);window.addEventListener('resize',reset);window.addEventListener('scroll',reset,true)})})();</script>`,
 };

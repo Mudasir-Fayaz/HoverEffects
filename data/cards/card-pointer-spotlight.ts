@@ -112,7 +112,8 @@ export default function PointerSpotlightCard() {
     const invalidate = () => {
       rect = null;
     };
-    const canTrack = () => fine.matches && !reduce.matches;
+    const canTrack = (event: PointerEvent) =>
+      !reduce.matches && (fine.matches || event.pointerType === "touch");
 
     const frame = () => {
       state.raf = 0;
@@ -131,7 +132,7 @@ export default function PointerSpotlightCard() {
     };
 
     const onEnter = (event: PointerEvent) => {
-      if (!canTrack() || event.pointerType === "touch") return;
+      if (!canTrack(event)) return;
       measure();
       state.live = true;
       card.classList.add("is-live");
@@ -229,5 +230,5 @@ export default function PointerSpotlightCard() {
         </p>
       </div>
     </article>
-<script>(function(){var card=document.querySelector('.he-card-pointer-spotlight');if(!card)return;var glow=card.querySelector('.glow');var reduce=matchMedia('(prefers-reduced-motion: reduce)');var fine=matchMedia('(hover: hover) and (pointer: fine)');var rect=null;function measure(){rect=card.getBoundingClientRect()}function invalidate(){rect=null}function canTrack(){return fine.matches&&!reduce.matches}function canTrackPointer(e){return e.pointerType!=='touch'}var state={live:false,raf:0,x:0,y:0};function frame(){state.raf=0;if(!state.live||!rect)return;var dx=state.x-rect.width/2,dy=state.y-rect.height/2;glow.style.transform='translate3d('+dx+'px, '+dy+'px, 0)'}function onEnter(e){if(!canTrack()||!canTrackPointer(e))return;measure();state.live=true;card.classList.add('is-live');onMove(e)}function onMove(e){if(!state.live)return;if(!rect)measure();state.x=e.clientX-rect.left;state.y=e.clientY-rect.top;if(!state.raf)state.raf=requestAnimationFrame(frame)}function onLeave(){if(!state.live)return;state.live=false;if(state.raf){cancelAnimationFrame(state.raf);state.raf=0}card.classList.remove('is-live');glow.style.transform=''}card.addEventListener('pointerenter',onEnter);card.addEventListener('pointermove',onMove);card.addEventListener('pointerleave',onLeave);card.addEventListener('pointercancel',onLeave);window.addEventListener('resize',invalidate);window.addEventListener('scroll',invalidate,true);function onFocusIn(){if(reduce.matches)return;glow.style.transform='';card.classList.add('is-live')}function onFocusOut(e){if(state.live)return;if(!card.contains(e.relatedTarget))card.classList.remove('is-live')}card.addEventListener('focusin',onFocusIn);card.addEventListener('focusout',onFocusOut)})();</script>`,
+<script>(function(){var card=document.querySelector('.he-card-pointer-spotlight');if(!card)return;var glow=card.querySelector('.glow');var reduce=matchMedia('(prefers-reduced-motion: reduce)');var fine=matchMedia('(hover: hover) and (pointer: fine)');var rect=null;function measure(){rect=card.getBoundingClientRect()}function invalidate(){rect=null}function canTrack(e){return !reduce.matches&&(fine.matches||e.pointerType==='touch')}var state={live:false,raf:0,x:0,y:0};function frame(){state.raf=0;if(!state.live||!rect)return;var dx=state.x-rect.width/2,dy=state.y-rect.height/2;glow.style.transform='translate3d('+dx+'px, '+dy+'px, 0)'}function onEnter(e){if(!canTrack(e))return;measure();state.live=true;card.classList.add('is-live');onMove(e)}function onMove(e){if(!state.live)return;if(!rect)measure();state.x=e.clientX-rect.left;state.y=e.clientY-rect.top;if(!state.raf)state.raf=requestAnimationFrame(frame)}function onLeave(){if(!state.live)return;state.live=false;if(state.raf){cancelAnimationFrame(state.raf);state.raf=0}card.classList.remove('is-live');glow.style.transform=''}card.addEventListener('pointerenter',onEnter);card.addEventListener('pointermove',onMove);card.addEventListener('pointerleave',onLeave);card.addEventListener('pointercancel',onLeave);window.addEventListener('resize',invalidate);window.addEventListener('scroll',invalidate,true);function onFocusIn(){if(reduce.matches)return;glow.style.transform='';card.classList.add('is-live')}function onFocusOut(e){if(state.live)return;if(!card.contains(e.relatedTarget))card.classList.remove('is-live')}card.addEventListener('focusin',onFocusIn);card.addEventListener('focusout',onFocusOut)})();</script>`,
 };

@@ -23,7 +23,8 @@ export default function PointerSpotlightCard() {
     const invalidate = () => {
       rect = null;
     };
-    const canTrack = () => fine.matches && !reduce.matches;
+    const canTrack = (event: PointerEvent) =>
+      !reduce.matches && (fine.matches || event.pointerType === "touch");
 
     const frame = () => {
       state.raf = 0;
@@ -42,7 +43,7 @@ export default function PointerSpotlightCard() {
     };
 
     const onEnter = (event: PointerEvent) => {
-      if (!canTrack() || event.pointerType === "touch") return;
+      if (!canTrack(event)) return;
       measure();
       state.live = true;
       card.classList.add("is-live");

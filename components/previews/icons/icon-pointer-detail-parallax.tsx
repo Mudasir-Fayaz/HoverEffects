@@ -32,7 +32,10 @@ export default function IconPointerDetailParallax() {
       d1.style.transform = "translate(" + (cx * 1.2).toFixed(2) + "px," + (cy * 0.9).toFixed(2) + "px)";
       d2.style.transform = "translate(" + (cx * -2).toFixed(2) + "px," + (cy * -1.5).toFixed(2) + "px)";
     };
-    const enabled = () => fineQuery.matches && !reduceQuery.matches && !button.disabled;
+    const enabled = (event: PointerEvent) =>
+      (fineQuery.matches || event.pointerType === "touch") &&
+      !reduceQuery.matches &&
+      !button.disabled;
     const onMove = (event: PointerEvent) => {
       if (!live) return;
       x = event.clientX - (rect as DOMRect).left;
@@ -40,7 +43,7 @@ export default function IconPointerDetailParallax() {
       if (!frame) frame = requestAnimationFrame(render);
     };
     const onEnter = (event: PointerEvent) => {
-      if (!enabled() || event.pointerType === "touch") return;
+      if (!enabled(event)) return;
       measure();
       live = true;
       onMove(event);

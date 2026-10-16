@@ -26,15 +26,17 @@ export default function BtnProximityRail() {
       button.style.setProperty("--rail-top", (0.35 + 0.45 * (1 - t)).toFixed(3));
       button.style.setProperty("--rail-bottom", (0.35 + 0.45 * t).toFixed(3));
     };
-    const enabled = () =>
-      fineQuery.matches && !reduceQuery.matches && !button.disabled;
+    const enabled = (event: PointerEvent) =>
+      (fineQuery.matches || event.pointerType === "touch") &&
+      !reduceQuery.matches &&
+      !button.disabled;
     const onMove = (event: PointerEvent) => {
       if (!live) return;
       y = event.clientY - (rect as DOMRect).top;
       if (!frame) frame = requestAnimationFrame(render);
     };
     const onEnter = (event: PointerEvent) => {
-      if (!enabled() || event.pointerType === "touch") return;
+      if (!enabled(event)) return;
       measure();
       live = true;
       onMove(event);

@@ -31,7 +31,7 @@ export default function BadgePointerSpotlight() {
       glow.style.transform = "translate3d(" + (x - rect.width / 2) + "px," + (y - rect.height / 2) + "px,0)";
     };
     const onEnter = (event: PointerEvent) => {
-      if (!fine.matches || reduce.matches || event.pointerType === "touch") return;
+      if (reduce.matches || (!fine.matches && event.pointerType !== "touch")) return;
       measure();
       live = true;
       badge.classList.add("is-live");

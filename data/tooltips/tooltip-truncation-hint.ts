@@ -133,7 +133,7 @@ export default function TooltipTruncationHint() {
         setOpen(true);
         return;
       }
-      if (state.hover && finePointer.matches) {
+      if (state.hover) {
         window.clearTimeout(state.timer);
         state.timer = window.setTimeout(() => {
           state.timer = 0;
@@ -148,15 +148,27 @@ export default function TooltipTruncationHint() {
       if (!state.hover && !state.focus) setOpen(false);
     };
 
-    const onPointerEnter = () => {
-      if (!finePointer.matches) return;
+    const onPointerEnter = (event: PointerEvent) => {
+      if (!finePointer.matches && event.pointerType !== "touch") return;
       state.hover = true;
       state.suppressed = false;
       maybeOpen();
     };
-    const onPointerLeave = () => {
+    const onPointerLeave = (event: PointerEvent) => {
       state.hover = false;
       state.suppressed = false;
+      if (event.pointerType === "touch") {
+        // Touch pointers vanish on release. Wait a beat so the tap
+        // activation layer can re-enter before the bubble closes.
+        window.clearTimeout(state.timer);
+        state.timer = window.setTimeout(() => {
+          state.timer = 0;
+          // A tap focuses the trigger, but on touch the bubble should close
+          // with the activation window — not stay pinned by that focus.
+          if (!state.hover) setOpen(false);
+        }, 420);
+        return;
+      }
       maybeClose();
     };
     const onFocusIn = () => {
@@ -239,5 +251,5 @@ export default function TooltipTruncationHint() {
         <span class="tip-bubble" id="tooltip-truncation-hint-tip34-bubble" role="tooltip"><span class="tip-text">Platform migration runbook — v3 draft notes, including rollback steps and owner assignments.</span><i class="tip-arrow" aria-hidden="true"></i></span>
         <p class="tip-trunc-note" role="status"></p>
       </div>
-<script>(function(){'use strict';var root=document.querySelector('.he-tooltip-truncation-hint');if(!root)return;var trigger=root.querySelector('.tip-trigger');var bubble=root.querySelector('.tip-bubble');if(!trigger||!bubble)return;var finePointer=matchMedia('(hover: hover) and (pointer: fine)');var HOVER_DELAY=80;var enabled=true;var state={hover:false,focus:false,suppressed:false,timer:0,open:false};var hook=null;function setOpen(next){if(state.open===next)return;state.open=next;bubble.classList.toggle('is-open',next);if(hook)hook(next)}function maybeOpen(){if(!enabled||state.suppressed)return;if(state.focus){setOpen(true);return}if(state.hover&&finePointer.matches){clearTimeout(state.timer);state.timer=setTimeout(function(){state.timer=0;if(enabled&&state.hover&&!state.suppressed)setOpen(true)},HOVER_DELAY)}}function maybeClose(){clearTimeout(state.timer);state.timer=0;if(!state.hover&&!state.focus)setOpen(false)}function onPointerEnter(){if(!finePointer.matches)return;state.hover=true;state.suppressed=false;maybeOpen()}function onPointerLeave(){state.hover=false;state.suppressed=false;maybeClose()}function onFocusIn(){state.focus=true;state.suppressed=false;maybeOpen()}function onFocusOut(){state.focus=false;state.suppressed=false;maybeClose()}function onKeydown(event){if(event.key!=='Escape'||!state.open)return;setOpen(false);if(state.hover||state.focus)state.suppressed=true}var label=root.querySelector('.tip-truncate-label'),note=root.querySelector('.tip-trunc-note');function updateTruncation(){if(!label)return;var truncated=label.scrollWidth>label.clientWidth+1;enabled=truncated;if(truncated){trigger.setAttribute('aria-describedby','tooltip-truncation-hint-tip34-bubble')}else{trigger.removeAttribute('aria-describedby');if(state.open)setOpen(false)}if(note){note.textContent=truncated?'The visible label is truncated at this width, so the tooltip is active.':'The label fits in full at this width, so the tooltip is suppressed.'}}updateTruncation();var measureRaf=0;window.addEventListener('resize',function(){if(measureRaf)cancelAnimationFrame(measureRaf);measureRaf=requestAnimationFrame(function(){measureRaf=0;updateTruncation()})});root.addEventListener('pointerenter',onPointerEnter);root.addEventListener('pointerleave',onPointerLeave);root.addEventListener('focusin',onFocusIn);root.addEventListener('focusout',onFocusOut);root.addEventListener('keydown',onKeydown);})();</script>`,
+<script>(function(){'use strict';var root=document.querySelector('.he-tooltip-truncation-hint');if(!root)return;var trigger=root.querySelector('.tip-trigger');var bubble=root.querySelector('.tip-bubble');if(!trigger||!bubble)return;var finePointer=matchMedia('(hover: hover) and (pointer: fine)');var HOVER_DELAY=80;var enabled=true;var state={hover:false,focus:false,suppressed:false,timer:0,open:false};var hook=null;function setOpen(next){if(state.open===next)return;state.open=next;bubble.classList.toggle('is-open',next);if(hook)hook(next)}function maybeOpen(){if(!enabled||state.suppressed)return;if(state.focus){setOpen(true);return}if(state.hover){clearTimeout(state.timer);state.timer=setTimeout(function(){state.timer=0;if(enabled&&state.hover&&!state.suppressed)setOpen(true)},HOVER_DELAY)}}function maybeClose(){clearTimeout(state.timer);state.timer=0;if(!state.hover&&!state.focus)setOpen(false)}function onPointerEnter(e){if(!finePointer.matches&&e.pointerType!=='touch')return;state.hover=true;state.suppressed=false;maybeOpen()}function onPointerLeave(e){state.hover=false;state.suppressed=false;if(e.pointerType==='touch'){clearTimeout(state.timer);state.timer=setTimeout(function(){state.timer=0;if(!state.hover)setOpen(false)},420);return}maybeClose()}function onFocusIn(){state.focus=true;state.suppressed=false;maybeOpen()}function onFocusOut(){state.focus=false;state.suppressed=false;maybeClose()}function onKeydown(event){if(event.key!=='Escape'||!state.open)return;setOpen(false);if(state.hover||state.focus)state.suppressed=true}var label=root.querySelector('.tip-truncate-label'),note=root.querySelector('.tip-trunc-note');function updateTruncation(){if(!label)return;var truncated=label.scrollWidth>label.clientWidth+1;enabled=truncated;if(truncated){trigger.setAttribute('aria-describedby','tooltip-truncation-hint-tip34-bubble')}else{trigger.removeAttribute('aria-describedby');if(state.open)setOpen(false)}if(note){note.textContent=truncated?'The visible label is truncated at this width, so the tooltip is active.':'The label fits in full at this width, so the tooltip is suppressed.'}}updateTruncation();var measureRaf=0;window.addEventListener('resize',function(){if(measureRaf)cancelAnimationFrame(measureRaf);measureRaf=requestAnimationFrame(function(){measureRaf=0;updateTruncation()})});root.addEventListener('pointerenter',onPointerEnter);root.addEventListener('pointerleave',onPointerLeave);root.addEventListener('focusin',onFocusIn);root.addEventListener('focusout',onFocusOut);root.addEventListener('keydown',onKeydown);})();</script>`,
 };
