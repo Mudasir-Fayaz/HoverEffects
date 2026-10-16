@@ -1,49 +1,34 @@
 import type { HoverEffect } from "../types";
+import { buttonShell } from "../base-effects-css";
+
+const ACCENT = "#166534";
+const ACCENT_ALT = "#4ade80";
+
+const css = `${buttonShell(".btn-shimmer-swipe", ACCENT, ACCENT_ALT)}
+.btn-shimmer-swipe{background:var(--he-accent);color:#fff;border-radius:999px;overflow:hidden;transition:background-color .25s ease}
+.btn-shimmer-swipe::before{content:"";position:absolute;top:-30%;bottom:-30%;left:0;width:32%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.26),transparent);transform:translateX(-180%) skewX(-16deg);transition:transform .5s cubic-bezier(.22,1,.36,1)}
+.btn-shimmer-swipe:hover::before,.btn-shimmer-swipe:focus-visible::before{transform:translateX(560%) skewX(-16deg)}
+.btn-shimmer-swipe:hover,.btn-shimmer-swipe:focus-visible{background:#14532d}`;
 
 export const shimmerSwipeButton: HoverEffect = {
   id: "btn-shimmer-swipe",
   title: "Shimmer Swipe",
   category: "buttons",
-  description: "A glossy highlight sweeps diagonally across the button surface on hover.",
-  tags: ["shimmer", "swipe", "gloss", "shine"],
+  description: "A soft translucent sheen sweeps once across the green pill button.",
+  tags: ["shine", "sheen", "sweep", "button"],
   animationType: "transform",
-  complexity: "medium",
+  complexity: "simple",
+  css,
   react: `export default function ShimmerSwipeButton() {
   return (
-    <button className="group relative px-8 py-3 font-semibold text-white bg-indigo-500 border-none cursor-pointer overflow-hidden z-0">
-      <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-[20deg] transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] -left-[75%] w-[50%] group-hover:left-[125%]" />
-      Hover Me
-    </button>
+    <>
+      <style>{\`${css.replace(/`/g, "\\`")}\`}</style>
+      <button type="button" className="btn-shimmer-swipe">
+        Download file
+      </button>
+    </>
   );
 }`,
-  html: `<button class="btn-shimmer-swipe">Shine</button>
-
-<style>
-.btn-shimmer-swipe {
-  position: relative;
-  padding: 14px 40px;
-  font-size: 15px;
-  font-weight: 600;
-  color: #fff;
-  background: #6366f1;
-  border: none;
-  cursor: pointer;
-  overflow: hidden;
-  z-index: 0;
-}
-.btn-shimmer-swipe::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -75%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-  transform: skewX(-20deg);
-  transition: left 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.btn-shimmer-swipe:hover::before {
-  left: 125%;
-}
-</style>`,
+  html: `<style>${css}</style>
+<button type="button" class="btn-shimmer-swipe">Download file</button>`,
 };

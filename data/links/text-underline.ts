@@ -1,39 +1,32 @@
 import type { HoverEffect } from "../types";
+import { linkShell } from "../base-effects-css";
+
+const ACCENT = "#4f46e5";
+const ACCENT_ALT = "#818cf8";
+
+const css = `${linkShell(".he-link-underline-slide", ACCENT, ACCENT_ALT)}
+.he-link-underline-slide::after{content:"";position:absolute;left:2px;right:2px;bottom:1px;height:1.5px;border-radius:1px;background:linear-gradient(90deg,var(--he-accent),var(--he-accent-2));transform:scaleX(0);transform-origin:right;transition:transform .3s cubic-bezier(.23,1,.32,1)}
+.he-link-underline-slide:hover::after,.he-link-underline-slide:focus-visible::after{transform:scaleX(1);transform-origin:left}`;
 
 export const textUnderline: HoverEffect = {
   id: "link-underline-slide",
   title: "Sliding Underline",
   category: "links",
-  description: "Underline grows from left to right on hover.",
+  description: "A thin line slides in from the leading edge and retracts beyond the trailing edge.",
   tags: ["underline", "slide", "link"],
   animationType: "scale",
   complexity: "simple",
+  css,
   react: `export default function SlidingUnderlineLink() {
   return (
-    <a href="#" className="relative text-slate-800 font-medium no-underline group">
-      Hover over me
-      <span className="absolute -bottom-0.5 left-0 h-0.5 w-0
-        bg-indigo-500 group-hover:w-full transition-all duration-300" />
-    </a>
+    <>
+      <style>{\`${css.replace(/`/g, "\\`")}\`}</style>
+      <a className="he-link-underline-slide" href="https://example.com">
+        Read the documentation
+      </a>
+    </>
   );
 }`,
-  html: `<a href="#" class="link-underline-slide">Hover over me</a>
-
-<style>
-.link-underline-slide {
-  position: relative;
-  text-decoration: none;
-  color: #1e293b;
-  font-weight: 500;
-}
-.link-underline-slide::after {
-  content: '';
-  position: absolute;
-  bottom: -2px; left: 0;
-  width: 0; height: 2px;
-  background: #6366f1;
-  transition: width 0.3s ease;
-}
-.link-underline-slide:hover::after { width: 100%; }
-</style>`,
+  html: `<style>${css}</style>
+<a class="he-link-underline-slide" href="https://example.com">Read the documentation</a>`,
 };

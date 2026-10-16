@@ -1,17 +1,25 @@
 export default function NavPillBg() {
+  const items = [
+    { label: "Inbox", href: "#", current: true },
+    { label: "Drafts", href: "#", current: false },
+    { label: "Sent", href: "#", current: false },
+  ];
   return (
-    <div className="flex gap-1 p-1 bg-slate-100 rounded-lg">
-      {["Home", "About", "Contact"].map((l) => (
-        <span
-          key={l}
-          className="text-slate-500 text-sm font-medium px-3 py-1.5
-            rounded-md cursor-pointer transition-all duration-300
-            hover:text-indigo-500 hover:bg-white
-            hover:shadow-[0_1px_3px_rgba(0,0,0,.08)]"
+    <nav aria-label="Demo navigation" className="flex gap-1 rounded-lg bg-slate-100 p-1">
+      {items.map((item) => (
+        <a
+          key={item.label}
+          href={item.href}
+          aria-current={item.current ? "page" : undefined}
+          className={`rounded-md px-3 py-1.5 text-sm font-medium no-underline outline-none transition-all duration-300 hover:bg-white hover:text-indigo-600 hover:shadow-[0_1px_3px_rgba(15,23,42,.08)] focus-visible:text-indigo-600 focus-visible:bg-white ${
+            item.current
+              ? "bg-white text-indigo-600 shadow-[0_1px_3px_rgba(15,23,42,.08)]"
+              : "text-slate-500"
+          }`}
         >
-          {l}
-        </span>
+          {item.label}
+        </a>
       ))}
-    </div>
+    </nav>
   );
 }

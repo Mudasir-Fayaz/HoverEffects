@@ -26,6 +26,10 @@ export const metadata: Metadata = {
     description:
       "Your personal collection of saved hover effects. Bookmark your favorite CSS and React hover effects for quick access and sharing.",
   },
+  robots: {
+    index: false,
+    follow: true,
+  },
 };
 
 export default function BookmarksPage() {

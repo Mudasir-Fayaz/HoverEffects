@@ -1,156 +1,155 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "motion/react";
-import { Menu, X, Heart, Star, Bookmark } from "lucide-react";
+import { Bookmark, GitFork, Heart, Menu, X } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 import CursorIcon from "./CursorIcon";
+
+const repositoryUrl = "https://github.com/Mudasir-Fayaz/HoverEffects";
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
+  const rootRef = useRef<HTMLElement>(null);
+  const categoriesActive = pathname.startsWith("/category");
+  const bookmarksActive = pathname === "/bookmarks";
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMobileOpen(false);
+    };
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!rootRef.current?.contains(event.target as Node)) setMobileOpen(false);
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("pointerdown", handlePointerDown);
+    };
+  }, [mobileOpen]);
+
+  const navLinkClass = (active: boolean) =>
+    `inline-flex min-h-10 items-center gap-1.5 px-3 text-sm font-medium no-underline transition-[color,background-color,transform] duration-150 active:scale-[0.97] ${
+      active
+        ? "bg-[var(--site-accent-soft)] text-[var(--site-accent)]"
+        : "text-[var(--site-text-muted)] hover:bg-[var(--site-surface-subtle)] hover:text-[var(--site-text)]"
+    }`;
 
   return (
-    <header className="fixed top-3 inset-x-0 z-50 px-3 sm:px-6">
+    <header ref={rootRef} className="fixed inset-x-0 top-1.5 z-50 px-2 sm:top-2 sm:px-6">
       <nav
-        className="max-w-6xl mx-auto border border-neutral-200/60
-          dark:border-neutral-800/60 bg-white/70 dark:bg-neutral-950/70 backdrop-blur-xl
-          px-4 sm:px-6 py-3"
+        aria-label="Primary navigation"
+        className="mx-auto max-w-6xl border border-[var(--site-border)] bg-[color-mix(in_srgb,var(--site-surface)_82%,transparent)] px-3 py-1.5 shadow-[0_1px_3px_var(--site-shadow)] backdrop-blur-xl sm:px-4"
       >
-        <div className="flex items-center justify-between">
-          {/* Logo */}
+        <div className="flex items-center justify-between gap-3">
           <Link
             href="/"
-            className="flex items-center gap-2 no-underline shrink-0"
+            className="flex min-h-10 shrink-0 items-center gap-2 px-1 no-underline"
+            aria-label="HoverEffects home"
           >
-            <CursorIcon className="w-5 h-5" />
-            <span className="font-semibold text-base text-neutral-900 dark:text-neutral-100">
+            <CursorIcon className="h-5 w-5" />
+            <span className="text-base font-semibold text-[var(--site-text)]">
               HoverEffects
             </span>
           </Link>
 
-          {/* Desktop Right */}
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden items-center gap-1 md:flex">
             <Link
               href="/category"
-              className={`text-sm font-medium px-3 py-1.5 no-underline
-                ${
-                  pathname === "/category"
-                    ? "text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800"
-                    : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-50 dark:hover:bg-neutral-800"
-                }`}
+              className={navLinkClass(categoriesActive)}
+              aria-current={categoriesActive ? "page" : undefined}
             >
               Categories
             </Link>
             <ThemeToggle />
             <Link
               href="/bookmarks"
-              className="flex items-center gap-1.5 px-3 py-1.5 text-sm
-                font-medium text-neutral-600 dark:text-neutral-400 border border-neutral-200
-                dark:border-neutral-800 no-underline
-                hover:border-neutral-300 dark:hover:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+              className={navLinkClass(bookmarksActive)}
+              aria-current={bookmarksActive ? "page" : undefined}
             >
-              <Bookmark className="w-3.5 h-3.5" />
-              <span className="leading-none">Bookmarks</span>
+              <Bookmark className="h-3.5 w-3.5" />
+              Bookmarks
             </Link>
             <a
-              href="https://github.com"
+              href={repositoryUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 px-3 py-1.5 text-sm
-                font-medium text-neutral-600 dark:text-neutral-400 border border-neutral-200
-                dark:border-neutral-800 no-underline
-                hover:border-neutral-300 dark:hover:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+              className={navLinkClass(false)}
             >
-              <Star className="w-3.5 h-3.5" />
-              <span className="leading-none">Star</span>
+              <GitFork className="h-3.5 w-3.5" />
+              GitHub
             </a>
-            <button
-              className="flex items-center gap-1.5 px-3 py-1.5 text-sm
-                font-medium text-neutral-600 dark:text-neutral-400 border border-neutral-200
-                dark:border-neutral-800
-                hover:border-neutral-300 dark:hover:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800 cursor-pointer"
+            <a
+              href={`${repositoryUrl}/issues`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={navLinkClass(false)}
             >
-              <Heart className="w-3.5 h-3.5" />
-              <span className="leading-none">Support</span>
-            </button>
+              <Heart className="h-3.5 w-3.5" />
+              Feedback
+            </a>
           </div>
 
-          {/* Mobile/Tablet Controls */}
-          <div className="flex md:hidden items-center gap-1">
+          <div className="flex items-center gap-0.5 md:hidden">
             <ThemeToggle />
             <Link
               href="/bookmarks"
-              className="flex items-center justify-center w-8 h-8 text-neutral-500
-                dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+              className={`site-icon-button ${bookmarksActive ? "bg-[var(--site-accent-soft)] text-[var(--site-accent)]" : ""}`}
               aria-label="Bookmarks"
+              aria-current={bookmarksActive ? "page" : undefined}
             >
-              <Bookmark className="w-4 h-4" />
+              <Bookmark className="h-4 w-4" />
             </Link>
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center w-8 h-8 text-neutral-500
-                dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-50 dark:hover:bg-neutral-800"
-              aria-label="Star on GitHub"
-            >
-              <Star className="w-4 h-4" />
-            </a>
             <button
-              onClick={() => setMobileOpen(!mobileOpen)}
-              className="flex items-center justify-center w-8 h-8 text-neutral-500
-                dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 cursor-pointer"
-              aria-label="Toggle menu"
+              type="button"
+              onClick={() => setMobileOpen((current) => !current)}
+              className="site-icon-button"
+              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileOpen}
+              aria-controls="mobile-navigation"
             >
-              {mobileOpen ? (
-                <X className="w-5 h-5" />
-              ) : (
-                <Menu className="w-5 h-5" />
-              )}
+              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Menu */}
-        <AnimatePresence>
-          {mobileOpen && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.22, ease: "easeInOut" }}
-              className="overflow-hidden md:hidden"
+        {mobileOpen && (
+          <div
+            id="mobile-navigation"
+            className="mt-2 grid gap-1 border-t border-[var(--site-border)] pt-2 md:hidden"
+          >
+            <Link
+              href="/category"
+              onClick={() => setMobileOpen(false)}
+              className={navLinkClass(categoriesActive)}
+              aria-current={categoriesActive ? "page" : undefined}
             >
-              <div className="pt-3 pb-2 border-t border-neutral-100 dark:border-neutral-800 mt-3 flex flex-col gap-0.5">
-                <Link
-                  href="/category"
-                  onClick={() => setMobileOpen(false)}
-                  className={`text-sm font-medium px-3 py-2 no-underline
-                    ${
-                      pathname === "/category"
-                        ? "text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800"
-                        : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-50 dark:hover:bg-neutral-800"
-                    }`}
-                >
-                  Categories
-                </Link>
-                <button
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium
-                    text-neutral-600 dark:text-neutral-400
-                    hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-50 dark:hover:bg-neutral-800 cursor-pointer"
-                >
-                  <Heart className="w-4 h-4" />
-                  <span className="leading-none">Support</span>
-                </button>
-                
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              Categories
+            </Link>
+            <a
+              href={repositoryUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={navLinkClass(false)}
+            >
+              <GitFork className="h-4 w-4" />
+              View on GitHub
+            </a>
+            <a
+              href={`${repositoryUrl}/issues`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={navLinkClass(false)}
+            >
+              <Heart className="h-4 w-4" />
+              Share feedback
+            </a>
+          </div>
+        )}
       </nav>
     </header>
   );

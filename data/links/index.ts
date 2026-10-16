@@ -1,13 +1,5 @@
 import type { GroupMeta, HoverEffect } from "../types";
-export { linkExtra01 } from "./link-extra-01";
-export { linkExtra02 } from "./link-extra-02";
-export { linkExtra03 } from "./link-extra-03";
-export { linkExtra04 } from "./link-extra-04";
-export { linkExtra05 } from "./link-extra-05";
-export { linkExtra06 } from "./link-extra-06";
-export { linkExtra07 } from "./link-extra-07";
-export { linkExtra08 } from "./link-extra-08";
-export { linkExtra09 } from "./link-extra-09";
+import { expandedEffectsByCategory } from "../expanded-effects";
 
 export { textUnderline } from "./text-underline";
 export { textGradient } from "./text-gradient";
@@ -17,28 +9,11 @@ import { textUnderline } from "./text-underline";
 import { textGradient } from "./text-gradient";
 import { textHighlight } from "./text-highlight";
 
-import { linkExtra01 } from "./link-extra-01";
-import { linkExtra02 } from "./link-extra-02";
-import { linkExtra03 } from "./link-extra-03";
-import { linkExtra04 } from "./link-extra-04";
-import { linkExtra05 } from "./link-extra-05";
-import { linkExtra06 } from "./link-extra-06";
-import { linkExtra07 } from "./link-extra-07";
-import { linkExtra08 } from "./link-extra-08";
-import { linkExtra09 } from "./link-extra-09";
 export const linkEffects: HoverEffect[] = [
   textUnderline,
   textHighlight,
   textGradient,
-  linkExtra01,
-  linkExtra02,
-  linkExtra03,
-  linkExtra04,
-  linkExtra05,
-  linkExtra06,
-  linkExtra07,
-  linkExtra08,
-  linkExtra09,
+  ...expandedEffectsByCategory.links,
 ];
 
 export const linksMeta: GroupMeta = {

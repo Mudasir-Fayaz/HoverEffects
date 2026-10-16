@@ -1,9 +1,12 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
-import { X, Copy, Download, Check, Terminal } from "lucide-react";
-import type { HoverEffect } from "@/lib/effects-data";
+import { useState, useCallback, useRef, useId } from "react";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
+import { X, Copy, Download, Check, Terminal, WrapText, Hash } from "lucide-react";
+import { getEffectSlug, type HoverEffect } from "@/lib/effects-data";
+import { useDialogFocus } from "@/hooks/useDialogFocus";
+import CodeHighlight from "@/components/CodeHighlight";
+import { buildInstallComponent, buildStandaloneHtml } from "@/lib/effect-source";
 
 const SITE_URL = "https://hovereffects.in";
 
@@ -31,19 +34,32 @@ export default function CodeModal({ effect, onClose }: CodeModalProps) {
   const [pkgManager, setPkgManager] = useState<PkgManager>("npm");
   const [copied, setCopied] = useState(false);
   const [cmdCopied, setCmdCopied] = useState(false);
-  const [lastEffectId, setLastEffectId] = useState(effect?.id);
+  // Wrapping is on by default and is reset whenever a new effect opens or the
+  // tab changes, so a fresh visit always starts wrapped.
+  const [wrap, setWrap] = useState(true);
+  const [showLineNumbers, setShowLineNumbers] = useState(true);
   const modalRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const titleId = useId();
+  const reduceMotion = useReducedMotion();
 
-  // Reset tabs when a new effect opens
+  useDialogFocus(Boolean(effect), onClose, modalRef, closeRef);
+
+  // Reset editor state when a different effect opens. Adjusting state during
+  // render (rather than in an effect) is the recommended pattern for this and
+  // guarantees a fresh visit always starts wrapped on the Install tab.
+  const [lastEffectId, setLastEffectId] = useState(effect?.id);
   if (effect?.id !== lastEffectId) {
     setLastEffectId(effect?.id);
     setActiveTab("install");
+    setWrap(true);
+    setShowLineNumbers(true);
     setCopied(false);
     setCmdCopied(false);
   }
 
   const registryUrl = effect
-    ? `${SITE_URL}/r/${effect.category}/${effect.id}.json`
+    ? `${SITE_URL}/r/${effect.category}/${getEffectSlug(effect)}.json`
     : "";
 
   const code =
@@ -55,91 +71,33 @@ export default function CodeModal({ effect, onClose }: CodeModalProps) {
 
   const handleCopy = useCallback(async () => {
     if (!code) return;
-    await navigator.clipboard.writeText(code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCopied(false);
+    }
   }, [code]);
 
   const handleCopyCommand = useCallback(async () => {
     if (!effect) return;
-    await navigator.clipboard.writeText(
-      installCommand(pkgManager, registryUrl),
-    );
-    setCmdCopied(true);
-    setTimeout(() => setCmdCopied(false), 2000);
+    try {
+      await navigator.clipboard.writeText(
+        installCommand(pkgManager, registryUrl),
+      );
+      setCmdCopied(true);
+      setTimeout(() => setCmdCopied(false), 2000);
+    } catch {
+      setCmdCopied(false);
+    }
   }, [effect, pkgManager, registryUrl]);
 
   const handleDownload = useCallback(() => {
     if (!effect || activeTab === "install") return;
     const ext = activeTab === "html" ? "html" : "tsx";
-    let content: string;
-
-    if (activeTab === "html") {
-      content = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${effect.title} — HoverEffects</title>
-  <meta name="description" content="${effect.title} — ${effect.description || 'A hover effect from HoverEffects library.'}" />
-
-  <!-- ===== ${effect.title} — Effect Styles START ===== -->
-  <!-- The styles below belong to the "${effect.title}" hover effect element itself. -->
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; }
-    body {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      font-family: system-ui, -apple-system, sans-serif;
-      background-color: #fafafa;
-      background-image: radial-gradient(circle, #e5e5e5 1px, transparent 1px);
-      background-size: 24px 24px;
-      padding: 24px;
-    }
-
-    /* Preview surface — the centered container for the effect */
-    .preview-surface {
-      width: 100%;
-      min-height: 320px;
-      padding: clamp(48px, 8vw, 96px);
-      background: #ffffff;
-      border: 1px solid #f0f0f0;
-      box-shadow: 0 0 0 1px rgba(0,0,0,.06);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    @media (min-width: 768px) {
-      .preview-surface {
-        width: auto;
-        min-width: 420px;
-        min-height: 380px;
-      }
-    }
-  </style>
-  <!-- ===== ${effect.title} — Effect Styles END ===== -->
-</head>
-<body>
-  <h1 style="font-size: 1.25rem; font-weight: 600; text-align: center; margin-bottom: 24px; color: #222;">${effect.title}</h1>
-  <!-- ===== ${effect.title} — Effect Element START ===== -->
-  <div class="preview-surface">
-    ${code}
-  </div>
-  <!-- ===== ${effect.title} — Effect Element END ===== -->
-
-  <footer style="margin-top: 24px; text-align: center; font-size: 12px; color: #555; line-height: 1.6;">
-    <a href="https://hovereffects.in" target="_blank" rel="noopener noreferrer" style="color: #333; text-decoration: underline;">HoverEffects</a> — Opensource library built by
-    <a href="https://mudasir.in" target="_blank" rel="noopener noreferrer" style="color: #333; text-decoration: underline;">Mudasir Fayaz</a>
-  </footer>
-</body>
-</html>`;
-    } else {
-      content = `"use client";\n\n${code}`;
-    }
+    const content =
+      activeTab === "html" ? buildStandaloneHtml(effect) : buildInstallComponent(effect);
 
     const blob = new Blob([content], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
@@ -148,22 +106,7 @@ export default function CodeModal({ effect, onClose }: CodeModalProps) {
     a.download = `${effect.id}.${ext}`;
     a.click();
     URL.revokeObjectURL(url);
-  }, [code, activeTab, effect]);
-
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [onClose]);
-
-  useEffect(() => {
-    document.body.style.overflow = effect ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [effect]);
+  }, [activeTab, effect]);
 
   const PKG_MANAGERS: PkgManager[] = ["npm", "pnpm", "bun"];
   const CODE_TABS: { id: CodeTab; label: string }[] = [
@@ -180,7 +123,7 @@ export default function CodeModal({ effect, onClose }: CodeModalProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
+          transition={{ duration: reduceMotion ? 0 : 0.2 }}
         >
           {/* Backdrop */}
           <motion.div
@@ -194,33 +137,38 @@ export default function CodeModal({ effect, onClose }: CodeModalProps) {
           {/* Modal */}
           <motion.div
             ref={modalRef}
-            className="relative w-full max-w-2xl bg-white dark:bg-neutral-900
-              shadow-[0_8px_40px_rgba(0,0,0,.10)] dark:shadow-[0_8px_40px_rgba(0,0,0,.40)]
-              border border-neutral-200/70 dark:border-neutral-800/70 overflow-hidden flex flex-col"
-            initial={{ scale: 0.94, opacity: 0, y: 16 }}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={titleId}
+            tabIndex={-1}
+            className="relative w-full max-w-2xl bg-[var(--site-surface-raised)]
+              shadow-[0_18px_55px_var(--site-shadow)]
+              border border-[var(--site-border)] overflow-hidden flex max-h-[calc(100dvh-2rem)] flex-col"
+            initial={reduceMotion ? { opacity: 0 } : { scale: 0.96, opacity: 0, y: 12 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.94, opacity: 0, y: 16 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
+            exit={reduceMotion ? { opacity: 0 } : { scale: 0.97, opacity: 0, y: 8 }}
+            transition={{ duration: reduceMotion ? 0 : 0.2, ease: [0.23, 1, 0.32, 1] }}
           >
             {/* ── Header ── */}
-            <div className="flex items-center justify-between px-5 py-3.5 border-b border-neutral-100 dark:border-neutral-800">
+            <div className="flex items-center justify-between gap-2 px-3 py-2 border-b border-[var(--site-border)] sm:px-4">
               <div className="flex items-center gap-2">
-                <h3 className="font-medium text-sm text-neutral-900 dark:text-neutral-100">
+                <h3 id={titleId} className="font-medium text-sm text-[var(--site-text)]">
                   {effect.title}
                 </h3>
                 {effect.complexity && (
                   <span
                     className="px-1.5 py-0.5 text-[10px] font-medium 
-                    bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 capitalize"
+                    bg-[var(--site-surface-subtle)] text-[var(--site-text-muted)] capitalize"
                   >
                     {effect.complexity}
                   </span>
                 )}
               </div>
               <button
+                ref={closeRef}
                 onClick={onClose}
-                className="p-1.5 text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300
-                  hover:bg-neutral-50 dark:hover:bg-neutral-800  transition-all duration-150 cursor-pointer"
+                className="grid h-10 w-10 shrink-0 place-items-center text-[var(--site-text-subtle)] hover:text-[var(--site-text)]
+                  hover:bg-[var(--site-surface-subtle)] transition-[color,background-color,transform] duration-150 active:scale-[0.97] cursor-pointer"
                 aria-label="Close modal"
               >
                 <X className="w-4 h-4" />
@@ -228,20 +176,24 @@ export default function CodeModal({ effect, onClose }: CodeModalProps) {
             </div>
 
             {/* ── Tab bar + actions ── */}
-            <div className="flex items-center justify-between px-5 py-2.5 border-b border-neutral-100 dark:border-neutral-800">
-              <div className="flex gap-0.5 p-0.5 bg-neutral-100 dark:bg-neutral-800 ">
+            <div className="flex flex-wrap items-center justify-between gap-1.5 px-2 py-2 border-b border-[var(--site-border)] sm:px-4">
+              <div className="flex gap-0.5 p-0.5 bg-[var(--site-surface-subtle)]" role="tablist" aria-label="Code format">
                 {CODE_TABS.map((tab) => (
                   <button
                     key={tab.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={activeTab === tab.id}
                     onClick={() => {
                       setActiveTab(tab.id);
                       setCopied(false);
+                      setWrap(true);
                     }}
-                    className={`px-3.5 py-1 text-xs font-medium 
+                    className={`min-h-9 px-3.5 py-1 text-xs font-medium
                       transition-all duration-150 cursor-pointer ${
                         activeTab === tab.id
-                          ? "bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 shadow-sm"
-                          : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300"
+                          ? "bg-[var(--site-surface)] text-[var(--site-text)] shadow-sm"
+                          : "text-[var(--site-text-muted)] hover:text-[var(--site-text)]"
                       }`}
                   >
                     {tab.label}
@@ -250,13 +202,42 @@ export default function CodeModal({ effect, onClose }: CodeModalProps) {
               </div>
 
               {activeTab !== "install" && (
-                <div className="flex gap-1.5">
+                <div className="flex flex-wrap gap-1.5">
                   <button
+                    type="button"
+                    onClick={() => setShowLineNumbers((value) => !value)}
+                    aria-pressed={showLineNumbers && !wrap}
+                    disabled={wrap}
+                    title={wrap ? "Line numbers are hidden while wrapping is on" : "Toggle line numbers"}
+                    className={`flex min-h-9 items-center gap-1.5 px-2.5 text-xs font-medium border transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-40 ${
+                      showLineNumbers && !wrap
+                        ? "border-[var(--site-accent-border)] bg-[var(--site-accent-soft)] text-[var(--site-accent-text)]"
+                        : "border-[var(--site-border)] text-[var(--site-text-muted)]"
+                    }`}
+                  >
+                    <Hash className="w-3 h-3" />
+                    <span className="hidden sm:inline">Lines</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setWrap((value) => !value)}
+                    aria-pressed={wrap}
+                    title="Toggle line wrapping"
+                    className={`flex min-h-9 items-center gap-1.5 px-2.5 text-xs font-medium border transition-colors duration-150 ${
+                      wrap
+                        ? "border-[var(--site-accent-border)] bg-[var(--site-accent-soft)] text-[var(--site-accent-text)]"
+                        : "border-[var(--site-border)] text-[var(--site-text-muted)]"
+                    }`}
+                  >
+                    <WrapText className="w-3 h-3" />
+                    <span className="hidden sm:inline">Wrap</span>
+                  </button>
+                  <button
+                    type="button"
                     onClick={handleCopy}
-                    className="flex items-center gap-1.5 px-3 py-1.5
-                      text-xs font-medium  border border-neutral-200 dark:border-neutral-700
-                      transition-all duration-150 cursor-pointer
-                      hover:border-neutral-300 dark:hover:border-neutral-600 text-neutral-600 dark:text-neutral-300 bg-white dark:bg-neutral-800"
+                    aria-live="polite"
+                    className="flex min-h-9 items-center gap-1.5 px-3 text-xs font-medium border border-[var(--site-border)]
+                      transition-colors duration-150 hover:border-[var(--site-accent-border)] text-[var(--site-text)] bg-[var(--site-surface)]"
                   >
                     {copied ? (
                       <>
@@ -271,11 +252,10 @@ export default function CodeModal({ effect, onClose }: CodeModalProps) {
                     )}
                   </button>
                   <button
+                    type="button"
                     onClick={handleDownload}
-                    className="flex items-center gap-1.5 px-3 py-1.5
-                      text-xs font-medium  border border-neutral-200 dark:border-neutral-700
-                      transition-all duration-150 cursor-pointer
-                      hover:border-neutral-300 dark:hover:border-neutral-600 text-neutral-600 dark:text-neutral-300 bg-white dark:bg-neutral-800"
+                    className="flex min-h-9 items-center gap-1.5 px-3 text-xs font-medium border border-[var(--site-border)]
+                      transition-colors duration-150 hover:border-[var(--site-accent-border)] text-[var(--site-text)] bg-[var(--site-surface)]"
                   >
                     <Download className="w-3 h-3" />
                     <span>Download</span>
@@ -285,7 +265,7 @@ export default function CodeModal({ effect, onClose }: CodeModalProps) {
             </div>
 
             {/* ── Content area ── */}
-            <div className="relative h-95 shrink-0">
+             <div className="relative min-h-0 min-w-0 flex-1 basis-95">
               {activeTab === "install" ? (
                 /* ── Install tab ── */
                 <div className="h-full overflow-auto p-5 custom-scrollbar">
@@ -293,22 +273,22 @@ export default function CodeModal({ effect, onClose }: CodeModalProps) {
                   <div className="flex items-center gap-2 mb-5">
                     <div
                       className="flex items-center justify-center w-8 h-8
-                      bg-neutral-100 dark:bg-neutral-800  text-neutral-500 dark:text-neutral-400"
+                      bg-[var(--site-surface-subtle)]  text-[var(--site-text-muted)]"
                     >
                       <Terminal className="w-4 h-4" />
                     </div>
                     <div>
-                      <div className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
+                      <div className="text-sm font-medium text-[var(--site-text)]">
                         One-command install
                       </div>
-                      <div className="text-xs text-neutral-400 dark:text-neutral-500">
+                      <div className="text-xs text-[var(--site-text-subtle)]">
                         via shadcn CLI — adds directly to your project
                       </div>
                     </div>
                   </div>
 
                   {/* Package manager tabs */}
-                  <div className="flex gap-0.5 p-0.5 bg-neutral-100 dark:bg-neutral-800  w-fit mb-3">
+                  <div className="flex gap-0.5 p-0.5 bg-[var(--site-surface-subtle)]  w-fit mb-3">
                     {PKG_MANAGERS.map((pm) => (
                       <button
                         key={pm}
@@ -316,8 +296,8 @@ export default function CodeModal({ effect, onClose }: CodeModalProps) {
                         className={`px-3 py-1 text-xs font-medium 
                           transition-all duration-150 cursor-pointer ${
                             pkgManager === pm
-                              ? "bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 shadow-sm"
-                              : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300"
+                              ? "bg-[var(--site-surface)] text-[var(--site-text)] shadow-sm"
+                              : "text-[var(--site-text-muted)] hover:text-[var(--site-text)]"
                           }`}
                       >
                         {pm}
@@ -325,22 +305,18 @@ export default function CodeModal({ effect, onClose }: CodeModalProps) {
                     ))}
                   </div>
 
-                  {/* Command area */}
-                  <div
-                    className="flex items-center justify-between gap-3 px-4 py-3
-                    bg-neutral-900  border border-neutral-800"
-                  >
-                    <code className="text-xs text-emerald-400 font-mono break-all leading-relaxed flex-1">
-                      {installCommand(pkgManager, registryUrl)}
-                    </code>
+                  {/* Command row — command scrolls, copy pinned to the right end */}
+                  <div className="flex items-center gap-2 border border-neutral-800 bg-neutral-950 px-3 py-2 sm:gap-3 sm:px-4">
+                    <div className="min-w-0 flex-1 overflow-x-auto custom-scrollbar">
+                      <code className="block whitespace-pre font-mono text-[11px] leading-relaxed text-white sm:text-xs">
+                        {installCommand(pkgManager, registryUrl)}
+                      </code>
+                    </div>
                     <button
+                      type="button"
                       onClick={handleCopyCommand}
-                      className="shrink-0 flex items-center gap-1.5 px-2.5 py-1.5
-                        text-xs font-medium 
-                        bg-neutral-800 border border-neutral-700
-                        transition-all duration-150 cursor-pointer
-                        hover:bg-neutral-700 hover:border-neutral-600
-                        text-neutral-300"
+                      aria-live="polite"
+                      className="inline-flex h-9 shrink-0 items-center justify-center gap-1.5 border border-neutral-700 bg-neutral-800 px-2.5 text-xs font-medium text-white transition-colors duration-150 hover:border-neutral-600 hover:bg-neutral-700 active:scale-[0.98] sm:px-3"
                     >
                       {cmdCopied ? (
                         <>
@@ -358,34 +334,34 @@ export default function CodeModal({ effect, onClose }: CodeModalProps) {
 
                   {/* How it works */}
                   <div className="mt-5 space-y-2">
-                    <div className="text-[11px] font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">
+                    <div className="text-[11px] font-semibold text-[var(--site-text-subtle)] uppercase tracking-wider">
                       How it works
                     </div>
                     {[
                       "Runs the shadcn CLI automatically",
-                      `Adds \`${effect.id}.tsx\` to your components/ui/ folder`,
+                      `Adds \`${getEffectSlug(effect)}.tsx\` to components/hovereffects/`,
                       "Component is ready to import and use",
                     ].map((step, i) => (
                       <div key={i} className="flex items-start gap-2.5">
                         <span
                           className="shrink-0 flex items-center justify-center
-                          w-4 h-4  bg-neutral-100 dark:bg-neutral-800
-                          text-neutral-500 dark:text-neutral-400 text-[10px] font-bold mt-0.5"
+                          w-4 h-4  bg-[var(--site-surface-subtle)]
+                          text-[var(--site-text-muted)] text-[10px] font-bold mt-0.5"
                         >
                           {i + 1}
                         </span>
-                        <span className="text-xs text-neutral-600 dark:text-neutral-400">{step}</span>
+                        <span className="text-xs text-[var(--site-text-muted)]">{step}</span>
                       </div>
                     ))}
                   </div>
 
                   {/* Registry URL */}
-                  <div className="mt-5 pt-4 border-t border-neutral-100 dark:border-neutral-800">
-                    <div className="text-[11px] font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider mb-2">
+                  <div className="mt-5 pt-4 border-t border-[var(--site-border)]">
+                    <div className="text-[11px] font-semibold text-[var(--site-text-subtle)] uppercase tracking-wider mb-2">
                       Registry URL
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-neutral-500 dark:text-neutral-400 font-mono break-all">
+                      <span className="text-xs text-[var(--site-text-muted)] font-mono break-all">
                         {registryUrl}
                       </span>
                     </div>
@@ -393,17 +369,37 @@ export default function CodeModal({ effect, onClose }: CodeModalProps) {
                 </div>
               ) : (
                 /* ── Code tab (React / HTML) ── */
-                <div className="h-full overflow-auto p-5 bg-neutral-50 dark:bg-neutral-950 custom-scrollbar">
-                  <pre className="code-block text-neutral-700 dark:text-neutral-300 whitespace-pre-wrap wrap-break-word">
-                    <code>{code}</code>
-                  </pre>
+                <div className="code-surface flex h-full min-w-0 flex-col bg-[var(--code-bg)]">
+                  <div className="flex items-center justify-between border-b border-white/10 px-4 py-2">
+                    <span className="font-mono text-[11px] uppercase tracking-wide text-[var(--code-comment)]">
+                      {activeTab === "html" ? "HTML + CSS" : "React / TSX"}
+                    </span>
+                  </div>
+                  <div className="min-h-0 min-w-0 flex-1 overflow-auto p-4 custom-scrollbar">
+                    <pre
+                      className={`min-w-0 text-[var(--code-text)] ${
+                        wrap ? "whitespace-pre-wrap" : "w-max min-w-full whitespace-pre"
+                      }`}
+                    >
+                      <CodeHighlight
+                        code={code}
+                        language={activeTab === "html" ? "html" : "tsx"}
+                        wrap={wrap}
+                        showLineNumbers={showLineNumbers && !wrap}
+                      />
+                    </pre>
+                  </div>
                 </div>
               )}
 
-              {/* Fade overlay at bottom */}
+              {/* Subtle bottom fade, matched to the active pane background. */}
               <div
-                className="pointer-events-none absolute bottom-0 left-0 right-0 h-12
-                  bg-linear-to-t from-white/80 dark:from-neutral-900/80 to-transparent"
+                aria-hidden="true"
+                className={`pointer-events-none absolute inset-x-0 bottom-0 h-8 ${
+                  activeTab === "install"
+                    ? "bg-[linear-gradient(to_top,color-mix(in_srgb,var(--site-surface)_80%,transparent),transparent)]"
+                    : "bg-[linear-gradient(to_top,color-mix(in_srgb,var(--code-bg)_80%,transparent),transparent)]"
+                }`}
               />
             </div>
           </motion.div>

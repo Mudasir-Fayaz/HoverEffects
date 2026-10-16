@@ -31,31 +31,31 @@ const illustrationMap: Record<string, () => React.ReactElement> = {
 export default function CategoryIndexContent() {
   return (
     <main className="flex-1">
-      <div className="max-w-6xl mx-auto pt-10">
+      <div className="max-w-6xl mx-auto pt-24 sm:pt-28">
         <div className="px-1.5">
           <Link
             href="/"
-            className="mb-8 inline-flex items-center gap-1.5 text-xs text-neutral-400 dark:text-neutral-500 no-underline transition-colors duration-150 hover:text-neutral-600 dark:hover:text-neutral-300"
+            className="mb-8 inline-flex items-center gap-1.5 text-xs text-[var(--site-text-subtle)] no-underline transition-colors duration-150 hover:text-[var(--site-text)]"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             Back to Home
           </Link>
 
           <div className="mb-8 max-w-2xl">
-            <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100 sm:text-4xl">
-              All Categories
+            <h1 className="text-3xl font-bold text-[var(--site-text)] sm:text-4xl">
+              All categories
             </h1>
-            <p className="mt-2 text-base text-neutral-500 dark:text-neutral-400">
-              Browse every HoverEffects collection.
+            <p className="mt-2 text-base text-[var(--site-text-muted)]">
+              Every HoverEffects collection, with previews and copy-ready code.
             </p>
-            <div className="mt-2 text-xs text-neutral-400 dark:text-neutral-500">
-              {categories.length} categor{categories.length === 1 ? "y" : "ies"}
+            <div className="mt-2 text-xs text-[var(--site-text-subtle)]">
+              {categories.length} categories
             </div>
           </div>
         </div>
 
         <div
-          className="-mx-1.5 h-[10px]"
+          className="site-hatch h-[10px] border-y"
           style={{
             backgroundImage:
               "repeating-linear-gradient(315deg, rgba(148,163,184,0.25) 0, rgba(148,163,184,0.25) 1px, transparent 0, transparent 50%)",
@@ -65,28 +65,32 @@ export default function CategoryIndexContent() {
           }}
         />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1.5 p-1.5 border-l border-r border-neutral-200/50 dark:border-neutral-700/50">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1.5 p-1.5 border-l border-r border-[var(--site-border)]">
           {categories.map((cat) => {
             const effects = getEffectsByCategory(cat.slug);
             return (
               <Link
                 key={cat.slug}
                 href={`/category/${cat.slug}`}
-                className="block border border-neutral-200
-                  dark:border-neutral-800 bg-white dark:bg-neutral-900 no-underline
-                  overflow-hidden outline-none
-                  hover:ring-[3px] hover:ring-neutral-400/40 dark:hover:ring-neutral-500/40
-                  focus-visible:ring-[3px] focus-visible:ring-neutral-400/40 dark:focus-visible:ring-neutral-500/40"
+                className="group block border border-[var(--site-border)] bg-[var(--site-surface)] no-underline
+                  overflow-hidden outline-none transition-[border-color,transform] duration-200
+                  hover:-translate-y-0.5 hover:border-[var(--site-accent-border)]
+                  focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[var(--site-focus)]"
               >
-                <div className="overflow-hidden bg-neutral-100/50 dark:bg-neutral-800 shadow-sm shadow-neutral-200/50 dark:shadow-neutral-700/50 flex items-center justify-center aspect-[4/3]">
+                <div className="flex aspect-[4/3] items-center justify-center overflow-hidden border-b border-[var(--site-border)] bg-[var(--site-art-bg)]">
                   {(illustrationMap[cat.slug] ?? (() => null))()}
                 </div>
-                <div className="p-4 text-center">
-                  <h3 className="text-base font-semibold text-neutral-900 dark:text-neutral-100">
-                    {cat.title}
-                  </h3>
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                    {effects.length} effect{effects.length !== 1 ? "s" : ""}
+                <div className="p-4">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <h3 className="text-base font-semibold text-[var(--site-text)]">
+                      {cat.title}
+                    </h3>
+                    <span className="shrink-0 text-xs font-medium text-[var(--site-text-subtle)]">
+                      {effects.length}
+                    </span>
+                  </div>
+                  <p className="mt-0.5 line-clamp-2 text-xs text-[var(--site-text-muted)]">
+                    {cat.description}
                   </p>
                 </div>
               </Link>

@@ -1,13 +1,13 @@
 import type { ComponentType } from "react";
 import { buttonPreviews } from "./buttons";
 import { cardPreviews } from "./cards";
-import { imagePreviews } from "./images";
 import { linkPreviews } from "./links";
-import { iconPreviews } from "./icons";
 import { navigationPreviews } from "./navigation";
 import { inputPreviews } from "./inputs";
 import { badgePreviews } from "./badges";
+import { iconPreviews } from "./icons";
 import { tooltipPreviews } from "./tooltips";
+import { expandedPreviews } from "./ExpandedEffectPreview";
 
 /**
  * Maps every effect id → its preview component.
@@ -20,11 +20,11 @@ import { tooltipPreviews } from "./tooltips";
 export const previewMap: Record<string, ComponentType> = {
   ...buttonPreviews,
   ...cardPreviews,
-  ...imagePreviews,
   ...linkPreviews,
-  ...iconPreviews,
   ...navigationPreviews,
   ...inputPreviews,
   ...badgePreviews,
   ...tooltipPreviews,
+  ...iconPreviews,
+  ...expandedPreviews,
 };

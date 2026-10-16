@@ -1,41 +1,32 @@
 import type { HoverEffect } from "../types";
+import { buttonShell } from "../base-effects-css";
+
+const ACCENT = "#4338ca";
+const ACCENT_ALT = "#6366f1";
+
+const css = `${buttonShell(".btn-layer-shadow", ACCENT, ACCENT_ALT)}
+.btn-layer-shadow{background:var(--he-accent);color:#fff;border-radius:8px;transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s ease}
+.btn-layer-shadow:hover,.btn-layer-shadow:focus-visible{transform:translateY(-2px);box-shadow:0 4px 0 var(--he-accent-2),0 8px 0 rgba(99,102,241,.55),0 13px 0 rgba(99,102,241,.28),0 18px 20px rgba(30,27,75,.18)}`;
 
 export const layerShadowButton: HoverEffect = {
   id: "btn-layer-shadow",
   title: "Layer Shadow",
   category: "buttons",
-  description: "Stacked offset shadows in shades of the button color appear below on hover.",
-  tags: ["shadow", "layered", "depth"],
-  animationType: "transform",
+  description: "Four stacked indigo shadow layers step down beneath the lifted button.",
+  tags: ["shadow", "layers", "lift", "button"],
+  animationType: "shadow",
   complexity: "simple",
+  css,
   react: `export default function LayerShadowButton() {
   return (
-    <button className="px-8 py-3 font-semibold text-white bg-indigo-500 border-none cursor-pointer transition-all duration-300 hover:shadow-[0_4px_0_#4f46e5,0_8px_0_rgba(79,70,229,0.6),0_12px_0_rgba(79,70,229,0.3),0_16px_0_rgba(79,70,229,0.15)] hover:-translate-y-1">
-      Hover Me
-    </button>
+    <>
+      <style>{\`${css.replace(/`/g, "\\`")}\`}</style>
+      <button type="button" className="btn-layer-shadow">
+        Deploy now
+      </button>
+    </>
   );
 }`,
-  html: `<button class="btn-layer-shadow">Hover Me</button>
-
-<style>
-.btn-layer-shadow {
-  padding: 14px 40px;
-  font-size: 15px;
-  font-weight: 600;
-  color: #fff;
-  background: #6366f1;
-  border: none;
-  cursor: pointer;
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
-  box-shadow: 0 0 0 transparent;
-}
-.btn-layer-shadow:hover {
-  box-shadow:
-    0 4px 0 #4f46e5,
-    0 8px 0 rgba(79, 70, 229, 0.6),
-    0 12px 0 rgba(79, 70, 229, 0.3),
-    0 16px 0 rgba(79, 70, 229, 0.15);
-  transform: translateY(-4px);
-}
-</style>`,
+  html: `<style>${css}</style>
+<button type="button" class="btn-layer-shadow">Deploy now</button>`,
 };

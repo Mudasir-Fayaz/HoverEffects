@@ -42,7 +42,7 @@ function duplicateHoverRules() {
 
         const newSel = base
           .split(",")
-          .map((p) => ".touch-active " + p.trim())
+          .map((p) => ".effect-preview-root.touch-active " + p.trim())
           .join(", ");
 
         cssBlocks.push(`${newSel} { ${cssText} }`);
@@ -101,7 +101,8 @@ export default function TouchPreviewWrapper({
     <div
       ref={wrapperRef}
       onClick={activate}
-      className="[&::-webkit-tap-highlight-color]:transparent"
+      className="effect-preview-root [&::-webkit-tap-highlight-color]:transparent"
+      style={{ colorScheme: "light" }}
     >
       {children}
     </div>

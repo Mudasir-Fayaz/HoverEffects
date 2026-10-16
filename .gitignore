@@ -46,9 +46,14 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 /dist/
+/public/r/
 .vinext/
 .wrangler/
 
 # real Cloudflare config (never commit; see wrangler.example.jsonc)
 wrangler.jsonc
 wrangler.json
+skills/
+
+# local build/lint/test logs
+*-out.txt

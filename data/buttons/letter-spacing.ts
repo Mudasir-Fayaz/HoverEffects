@@ -1,36 +1,32 @@
 import type { HoverEffect } from "../types";
+import { buttonShell } from "../base-effects-css";
+
+const ACCENT = "#7c3aed";
+const ACCENT_ALT = "#a78bfa";
+
+const css = `${buttonShell(".btn-letter-spacing", ACCENT, ACCENT_ALT)}
+.btn-letter-spacing{background:#faf7ff;border:1px solid #e9e2fb;color:#4c1d95;letter-spacing:0;transition:letter-spacing .32s cubic-bezier(.22,1,.36,1),color .25s ease,border-color .25s ease}
+.btn-letter-spacing:hover,.btn-letter-spacing:focus-visible{letter-spacing:.12em;color:var(--he-accent);border-color:var(--he-accent-2)}`;
 
 export const letterSpacingButton: HoverEffect = {
   id: "btn-letter-spacing",
   title: "Letter Spacing",
   category: "buttons",
-  description: "Letter spacing smoothly expands on hover for a subtle typographic effect.",
-  tags: ["text", "spacing", "typography"],
-  animationType: "transform",
+  description: "The label's letter-spacing opens out while the violet text deepens.",
+  tags: ["text", "spacing", "typography", "button"],
+  animationType: "letter-spacing",
   complexity: "simple",
+  css,
   react: `export default function LetterSpacingButton() {
   return (
-    <button className="px-8 py-3 font-semibold text-white bg-slate-700 border-none cursor-pointer transition-[letter-spacing] duration-350 ease-[cubic-bezier(0.22,1,0.36,1)] tracking-normal hover:tracking-[0.15em]">
-      Hover Me
-    </button>
+    <>
+      <style>{\`${css.replace(/`/g, "\\`")}\`}</style>
+      <button type="button" className="btn-letter-spacing">
+        Read the guide
+      </button>
+    </>
   );
 }`,
-  html: `<button class="btn-letter-spacing">Hover Me</button>
-
-<style>
-.btn-letter-spacing {
-  padding: 14px 40px;
-  font-size: 15px;
-  font-weight: 600;
-  color: #fff;
-  background: #334155;
-  border: none;
-  cursor: pointer;
-  transition: letter-spacing 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-  letter-spacing: 0;
-}
-.btn-letter-spacing:hover {
-  letter-spacing: 0.15em;
-}
-</style>`,
+  html: `<style>${css}</style>
+<button type="button" class="btn-letter-spacing">Read the guide</button>`,
 };
