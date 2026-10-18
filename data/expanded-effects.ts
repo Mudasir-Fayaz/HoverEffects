@@ -167,7 +167,7 @@ const specs: Record<ExpandedCategory, EffectSpec[]> = {
   ],
   icons: [
     { title: "Ring Swap", kind: "ring-swap", accent: "#41ab6b", accentAlt: "#34d399", description: "A translucent circle fills solid while an accent ring settles around it on hover." },
-    { title: "Circle Shrink", kind: "circle-shrink", accent: "#eea303", accentAlt: "#fbbf24", description: "The white disc behind the icon shrinks inside its accent ring on hover." },
+    { title: "Circle Shrink", kind: "circle-shrink", accent: "#eea303", accentAlt: "#fbbf24", description: "The white disc shrinks to a small core, opening the accent fill inside the ring on hover." },
     { title: "Bloom Fade", kind: "bloom-fade", accent: "#f06060", accentAlt: "#f87171", description: "The filled circle blooms outward and fades, leaving the ring and accent glyph." },
     { title: "Spin Ring", kind: "spin-ring", accent: "#2ea3f2", accentAlt: "#7dd3fc", description: "A dashed ring orbits the icon while the circle fills on hover." },
     { title: "Slide Through", kind: "slide-through", accent: "#702fa8", accentAlt: "#a78bfa", description: "The glyph slides out one side and returns from the other as the circle fills." },
@@ -1133,10 +1133,11 @@ function iconCss(id: string, kind: string) {
 ${r}::after{content:"";position:absolute;top:-7px;left:-7px;width:100%;height:100%;border-radius:50%;border:2px solid var(--he-accent);transform:scale(.8);opacity:0;transition:transform .25s ease,opacity .25s ease}
 ${r}:hover,${r}:focus-visible{background:var(--he-accent);color:#fff}
 ${r}:hover::after,${r}:focus-visible::after{transform:scale(1);opacity:1}`,
-    "circle-shrink": `${r}{box-shadow:0 0 0 3px var(--he-accent)}
-${r}::after{content:"";position:absolute;inset:0;border-radius:50%;background:#fff;transition:transform .3s cubic-bezier(.22,1,.36,1)}
+    "circle-shrink": `${r}{background:var(--he-accent);box-shadow:0 0 0 3px var(--he-accent);transition:background-color .25s ease,color .25s ease,box-shadow .3s ease,transform .2s ease}
+${r}::after{content:"";position:absolute;inset:0;border-radius:50%;background:#fff;transition:transform .32s cubic-bezier(.22,1,.36,1)}
 ${r} svg{z-index:1}
-${r}:hover::after,${r}:focus-visible::after{transform:scale(.85)}`,
+${r}:hover,${r}:focus-visible{box-shadow:0 0 0 4px color-mix(in srgb,var(--he-accent) 40%,transparent)}
+${r}:hover::after,${r}:focus-visible::after{transform:scale(.52)}`,
     "bloom-fade": `${r}{color:#fff;box-shadow:0 0 0 2px var(--he-accent)}
 ${r}::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--he-accent);transition:transform .3s ease,opacity .3s ease}
 ${r} svg{z-index:1}

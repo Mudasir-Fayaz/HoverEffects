@@ -27,20 +27,30 @@ const css = `.he-icon-cube-stack-settle{
   background: var(--surface);
   color: var(--text-2);
   cursor: pointer;
-  transition: border-color .2s var(--ease);
+  transition: border-color .24s var(--ease), background-color .24s var(--ease);
 }
-.he-icon-cube-stack-settle:hover { border-color: var(--accent-2); }
+.he-icon-cube-stack-settle:hover { border-color: var(--accent-2); background: var(--accent-soft); }
 .he-icon-cube-stack-settle:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .he-icon-cube-stack-settle:active { border-color: var(--accent); }
 .hi26-icon { display: block; }
 .hi26-cube {
   transform: translate(var(--tx, 0px), var(--ty, 0px));
-  transition: transform .24s var(--ease-out);
+  transition: transform .32s cubic-bezier(.34, 1.45, .5, 1);
 }
+.hi26-cube path { transition: opacity .26s var(--ease); }
+/* Resting offsets live here (not inline) so hover can settle every cube to 0. */
+.hi26-c1 { --tx: 2.8px; --ty: -3.2px; transition-delay: 0ms; }
+.hi26-c2 { --tx: -2.6px; --ty: 2.4px; transition-delay: 60ms; }
+.hi26-c3 { --tx: 2.8px; --ty: 2.6px; transition-delay: 90ms; }
 @media (hover: hover) and (pointer: fine) {
   .he-icon-cube-stack-settle:hover .hi26-cube { --tx: 0px; --ty: 0px; }
+  .he-icon-cube-stack-settle:hover .hi26-c2 { transition-delay: 0ms; }
+  .he-icon-cube-stack-settle:hover .hi26-c3 { transition-delay: 45ms; }
+  .he-icon-cube-stack-settle:hover .hi26-c1 { transition-delay: 90ms; }
+  .he-icon-cube-stack-settle:hover .hi26-cube path { opacity: 1; }
 }
 .he-icon-cube-stack-settle:focus-visible .hi26-cube { --tx: 0px; --ty: 0px; }
+.he-icon-cube-stack-settle:focus-visible .hi26-cube path { opacity: 1; }
 
 /* Reduced motion: keyframes, strokes and tracking stop; a static
    accent state and the focus/pressed feedback remain. */
@@ -57,7 +67,7 @@ export const iconCubeStackSettle: HoverEffect = {
   id: "icon-cube-stack-settle",
   title: "Cube Stack Settle",
   category: "icons",
-  description: "Cubes settle a few pixels into a stack",
+  description: "Three loose cubes settle into a tight stack",
   tags: ["icons","cube","stack","settle","hover"],
   animationType: "transform",
   complexity: "simple",
@@ -68,17 +78,17 @@ export const iconCubeStackSettle: HoverEffect = {
       <style>{\`${css}\`}</style>
       <button className="he-icon-cube-stack-settle" type="button">
         <svg className="hi26-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
-          <g transform="translate(12 7.6)"><g className="hi26-cube" style={{ ["--tx" as string]: "1.6px", ["--ty" as string]: "-1.3px" }}>
+          <g transform="translate(12 7.6)"><g className="hi26-cube hi26-c1">
             <path d="M0-3.2 2.8 0 0 3.2-2.8 0z" fill="var(--accent-2)" />
             <path d="M-2.8 0 0 3.2v4.2l-2.8-2.7z" fill="var(--accent)" opacity=".8" />
             <path d="M2.8 0 0 3.2v4.2l2.8-2.7z" fill="var(--line-strong)" />
           </g></g>
-          <g transform="translate(8.6 13.4)"><g className="hi26-cube" style={{ ["--tx" as string]: "-1.5px", ["--ty" as string]: "1.1px" }}>
+          <g transform="translate(8.6 13.4)"><g className="hi26-cube hi26-c2">
             <path d="M0-3.2 2.8 0 0 3.2-2.8 0z" fill="var(--accent-2)" opacity=".85" />
             <path d="M-2.8 0 0 3.2v4.2l-2.8-2.7z" fill="var(--accent)" opacity=".7" />
             <path d="M2.8 0 0 3.2v4.2l2.8-2.7z" fill="var(--line-strong)" opacity=".9" />
           </g></g>
-          <g transform="translate(15.4 13.4)"><g className="hi26-cube" style={{ ["--tx" as string]: "1.8px", ["--ty" as string]: "1.4px" }}>
+          <g transform="translate(15.4 13.4)"><g className="hi26-cube hi26-c3">
             <path d="M0-3.2 2.8 0 0 3.2-2.8 0z" fill="var(--accent-2)" opacity=".85" />
             <path d="M-2.8 0 0 3.2v4.2l-2.8-2.7z" fill="var(--accent)" opacity=".7" />
             <path d="M2.8 0 0 3.2v4.2l2.8-2.7z" fill="var(--line-strong)" opacity=".9" />
@@ -91,17 +101,17 @@ export const iconCubeStackSettle: HoverEffect = {
   html: `<style>${css}</style>
 <button class="he-icon-cube-stack-settle" type="button">
         <svg class="hi26-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
-          <g transform="translate(12 7.6)"><g class="hi26-cube" style="--tx: 1.6px; --ty: -1.3px">
+          <g transform="translate(12 7.6)"><g class="hi26-cube hi26-c1">
             <path d="M0-3.2 2.8 0 0 3.2-2.8 0z" fill="var(--accent-2)"/>
             <path d="M-2.8 0 0 3.2v4.2l-2.8-2.7z" fill="var(--accent)" opacity=".8"/>
             <path d="M2.8 0 0 3.2v4.2l2.8-2.7z" fill="var(--line-strong)"/>
           </g></g>
-          <g transform="translate(8.6 13.4)"><g class="hi26-cube" style="--tx: -1.5px; --ty: 1.1px">
+          <g transform="translate(8.6 13.4)"><g class="hi26-cube hi26-c2">
             <path d="M0-3.2 2.8 0 0 3.2-2.8 0z" fill="var(--accent-2)" opacity=".85"/>
             <path d="M-2.8 0 0 3.2v4.2l-2.8-2.7z" fill="var(--accent)" opacity=".7"/>
             <path d="M2.8 0 0 3.2v4.2l2.8-2.7z" fill="var(--line-strong)" opacity=".9"/>
           </g></g>
-          <g transform="translate(15.4 13.4)"><g class="hi26-cube" style="--tx: 1.8px; --ty: 1.4px">
+          <g transform="translate(15.4 13.4)"><g class="hi26-cube hi26-c3">
             <path d="M0-3.2 2.8 0 0 3.2-2.8 0z" fill="var(--accent-2)" opacity=".85"/>
             <path d="M-2.8 0 0 3.2v4.2l-2.8-2.7z" fill="var(--accent)" opacity=".7"/>
             <path d="M2.8 0 0 3.2v4.2l2.8-2.7z" fill="var(--line-strong)" opacity=".9"/>

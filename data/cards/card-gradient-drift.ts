@@ -30,12 +30,14 @@ const css = `.he-card-gradient-drift{
 }.he-card-gradient-drift .drift{
   position: absolute;
   inset: -40%;
-  background: linear-gradient(115deg, var(--surface-2), var(--accent-2) 46%, var(--surface-2) 82%);
-  background: linear-gradient(115deg, var(--surface-2), color-mix(in srgb, var(--accent) 26%, var(--surface-2)) 46%, var(--surface-2) 82%);
+  background: linear-gradient(115deg, var(--surface-2) 4%, color-mix(in srgb, var(--accent) 32%, var(--surface-2)) 30%, var(--surface-2) 52%, color-mix(in srgb, var(--accent-2) 92%, var(--surface-2)) 74%, var(--surface-2) 96%);
+  background-size: 180% 180%;
+  background-position: 8% 60%;
   opacity: .55;
   transform: translate3d(-3%, 2%, 0) scale(1.04);
-  transition: transform 1.1s var(--ease);
+  transition: transform 1.4s var(--ease), background-position 1.4s var(--ease), opacity .6s var(--ease);
   pointer-events: none;
+  will-change: background-position, transform;
 }.he-card-gradient-drift .card-content, .he-card-gradient-drift .card-footer{ position: relative; }.he-card-gradient-drift .card-icon{
   display: grid; place-items: center;
   width: 44px; height: 44px;
@@ -44,8 +46,8 @@ const css = `.he-card-gradient-drift{
   background: var(--surface);
   color: var(--accent);
 }.he-card-gradient-drift h2{ font-size: 1.15rem; margin-bottom: 8px; }.he-card-gradient-drift .body-copy{ color: var(--text-2); font-size: .92rem; }.he-card-gradient-drift .card-footer{ margin-top: 18px; }
-@media (hover: hover) and (pointer: fine){.he-card-gradient-drift:hover .drift{ transform: translate3d(3%, -2%, 0) scale(1.04); }
-}.he-card-gradient-drift:focus-within .drift{ transform: translate3d(3%, -2%, 0) scale(1.04); }
+@media (hover: hover) and (pointer: fine){.he-card-gradient-drift:hover .drift{ background-position: 92% 40%; opacity: .7; transform: translate3d(3%, -2%, 0) scale(1.06); }
+}.he-card-gradient-drift:focus-within .drift{ background-position: 92% 40%; opacity: .7; transform: translate3d(3%, -2%, 0) scale(1.06); }
 @media (prefers-reduced-motion: reduce){.he-card-gradient-drift .drift{ transition: none; transform: translate3d(0, 0, 0) scale(1.04); }
 }
 
@@ -79,7 +81,7 @@ export const cardGradientDrift: HoverEffect = {
   id: "card-gradient-drift",
   title: "Gradient Drift",
   category: "cards",
-  description: "An oversized muted gradient drifts gently across the card surface on hover.",
+  description: "An oversized gradient drifts across the card surface and re-tints to the accent on hover.",
   tags: ["card","gradient","drift","hover"],
   animationType: "transform",
   complexity: "simple",
