@@ -1318,7 +1318,7 @@ export const searchEntries: SearchEntry[] = [
     "title": "Gradient Drift",
     "category": "cards",
     "categoryTitle": "Cards",
-    "description": "An oversized muted gradient drifts gently across the card surface on hover.",
+    "description": "An oversized gradient drifts across the card surface and re-tints to the accent on hover.",
     "tags": [
       "card",
       "gradient",
@@ -1619,7 +1619,7 @@ export const searchEntries: SearchEntry[] = [
     "title": "Chip Spotlight",
     "category": "cards",
     "categoryTitle": "Cards",
-    "description": "Individual chips brighten and tint with the accent on hover and focus.",
+    "description": "The hovered chip fills with accent and lifts while the other chips dim, like a spotlight.",
     "tags": [
       "card",
       "chip",
@@ -2795,7 +2795,7 @@ export const searchEntries: SearchEntry[] = [
     "title": "Circle Shrink",
     "category": "icons",
     "categoryTitle": "Icons",
-    "description": "The white disc behind the icon shrinks inside its accent ring on hover.",
+    "description": "The white disc shrinks to a small core, opening the accent fill inside the ring on hover.",
     "tags": [
       "icons",
       "circle-shrink",
@@ -3313,7 +3313,7 @@ export const searchEntries: SearchEntry[] = [
     "title": "Grid Align",
     "category": "icons",
     "categoryTitle": "Icons",
-    "description": "Four offset tiles align with 1–2 px moves",
+    "description": "Four spread tiles pull together into a tidy grid",
     "tags": [
       "icons",
       "grid",
@@ -3635,7 +3635,7 @@ export const searchEntries: SearchEntry[] = [
     "title": "Cube Stack Settle",
     "category": "icons",
     "categoryTitle": "Icons",
-    "description": "Cubes settle a few pixels into a stack",
+    "description": "Three loose cubes settle into a tight stack",
     "tags": [
       "icons",
       "cube",
@@ -3768,7 +3768,7 @@ export const searchEntries: SearchEntry[] = [
     "title": "Connector Endpoint Follow",
     "category": "icons",
     "categoryTitle": "Icons",
-    "description": "Endpoint follows the pointer ≤2 px",
+    "description": "The accent endpoint tracks the pointer along the connector",
     "tags": [
       "icons",
       "connector",

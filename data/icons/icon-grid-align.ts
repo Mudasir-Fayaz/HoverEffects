@@ -27,20 +27,30 @@ const css = `.he-icon-grid-align{
   background: var(--surface);
   color: var(--text-2);
   cursor: pointer;
-  transition: border-color .2s var(--ease);
+  transition: border-color .24s var(--ease), background-color .24s var(--ease);
 }
-.he-icon-grid-align:hover { border-color: var(--accent-2); }
+.he-icon-grid-align:hover { border-color: var(--accent-2); background: var(--accent-soft); }
 .he-icon-grid-align:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .he-icon-grid-align:active { border-color: var(--accent); }
 .hi04-icon { display: block; }
 .hi04-t {
   transform: translate(var(--dx, 0px), var(--dy, 0px));
-  transition: transform .22s var(--ease-out);
+  transition: transform .3s var(--ease-out), fill .24s var(--ease);
 }
+/* Tiles rest slightly spread, then pull into the grid on hover. Offsets live
+   here (not inline) so the hover rule can win the cascade. */
+.hi04-t1 { --dx: -2.8px; --dy: -2.6px; fill: var(--accent-2); }
+.hi04-t2 { --dx: 2.6px; --dy: -2.8px; fill: var(--line-strong); transition-delay: 0ms, 0ms; }
+.hi04-t3 { --dx: -2.6px; --dy: 2.8px; fill: var(--line-strong); transition-delay: 50ms, 0ms; }
+.hi04-t4 { --dx: 2.8px; --dy: 2.6px; fill: var(--accent); transition-delay: 100ms, 0ms; }
 @media (hover: hover) and (pointer: fine) {
   .he-icon-grid-align:hover .hi04-t { --dx: 0px; --dy: 0px; }
+  .he-icon-grid-align:hover .hi04-t2,
+  .he-icon-grid-align:hover .hi04-t3 { fill: var(--accent-2); }
 }
 .he-icon-grid-align:focus-visible .hi04-t { --dx: 0px; --dy: 0px; }
+.he-icon-grid-align:focus-visible .hi04-t2,
+.he-icon-grid-align:focus-visible .hi04-t3 { fill: var(--accent-2); }
 
 /* Reduced motion: keyframes, strokes and tracking stop; a static
    accent state and the focus/pressed feedback remain. */
@@ -57,7 +67,7 @@ export const iconGridAlign: HoverEffect = {
   id: "icon-grid-align",
   title: "Grid Align",
   category: "icons",
-  description: "Four offset tiles align with 1–2 px moves",
+  description: "Four spread tiles pull together into a tidy grid",
   tags: ["icons","grid","align","hover"],
   animationType: "transform",
   complexity: "simple",
@@ -68,12 +78,10 @@ export const iconGridAlign: HoverEffect = {
       <style>{\`${css}\`}</style>
       <button className="he-icon-grid-align" type="button">
         <svg className="hi04-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
-          <g>
-            <rect className="hi04-t" style={{ ["--dx" as string]: "1.6px", ["--dy" as string]: "1.1px" }} x="4" y="4" width="7" height="7" rx="1.6" fill="var(--accent-2)" />
-            <rect className="hi04-t" style={{ ["--dx" as string]: "-1.4px", ["--dy" as string]: "1.5px" }} x="13" y="4" width="7" height="7" rx="1.6" fill="var(--line-strong)" />
-            <rect className="hi04-t" style={{ ["--dx" as string]: "1.5px", ["--dy" as string]: "-1.4px" }} x="4" y="13" width="7" height="7" rx="1.6" fill="var(--line-strong)" />
-            <rect className="hi04-t" style={{ ["--dx" as string]: "-1.6px", ["--dy" as string]: "-1.2px" }} x="13" y="13" width="7" height="7" rx="1.6" fill="var(--accent)" />
-          </g>
+          <rect className="hi04-t hi04-t1" x="4" y="4" width="7" height="7" rx="1.6" />
+          <rect className="hi04-t hi04-t2" x="13" y="4" width="7" height="7" rx="1.6" />
+          <rect className="hi04-t hi04-t3" x="4" y="13" width="7" height="7" rx="1.6" />
+          <rect className="hi04-t hi04-t4" x="13" y="13" width="7" height="7" rx="1.6" />
         </svg>
       </button>
     </>
@@ -82,12 +90,10 @@ export const iconGridAlign: HoverEffect = {
   html: `<style>${css}</style>
 <button class="he-icon-grid-align" type="button">
         <svg class="hi04-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
-          <g>
-            <rect class="hi04-t" style="--dx: 1.6px; --dy: 1.1px" x="4" y="4" width="7" height="7" rx="1.6" fill="var(--accent-2)"/>
-            <rect class="hi04-t" style="--dx: -1.4px; --dy: 1.5px" x="13" y="4" width="7" height="7" rx="1.6" fill="var(--line-strong)"/>
-            <rect class="hi04-t" style="--dx: 1.5px; --dy: -1.4px" x="4" y="13" width="7" height="7" rx="1.6" fill="var(--line-strong)"/>
-            <rect class="hi04-t" style="--dx: -1.6px; --dy: -1.2px" x="13" y="13" width="7" height="7" rx="1.6" fill="var(--accent)"/>
-          </g>
+          <rect class="hi04-t hi04-t1" x="4" y="4" width="7" height="7" rx="1.6"/>
+          <rect class="hi04-t hi04-t2" x="13" y="4" width="7" height="7" rx="1.6"/>
+          <rect class="hi04-t hi04-t3" x="4" y="13" width="7" height="7" rx="1.6"/>
+          <rect class="hi04-t hi04-t4" x="13" y="13" width="7" height="7" rx="1.6"/>
         </svg>
       </button>`,
 };

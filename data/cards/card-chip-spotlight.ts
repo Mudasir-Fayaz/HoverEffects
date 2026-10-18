@@ -41,13 +41,28 @@ const css = `.he-card-chip-spotlight{
   font-size: .78rem;
   font-weight: 650;
   text-decoration: none;
-  transition: background-color .22s var(--ease), border-color .22s var(--ease), color .22s var(--ease);
-}.he-card-chip-spotlight .chip:hover, .he-card-chip-spotlight .chip:focus-visible{
-  background: var(--accent-soft);
-  border-color: color-mix(in srgb, var(--accent) 45%, var(--line-strong));
-  color: var(--accent);
+  transition: background-color .24s var(--ease), border-color .24s var(--ease), color .24s var(--ease), transform .24s var(--ease), box-shadow .24s var(--ease), opacity .24s var(--ease);
+}.he-card-chip-spotlight .chip:focus-visible{
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
 }.he-card-chip-spotlight .card-footer{ margin-top: 17px; }
-@media (hover: hover) and (pointer: fine){.he-card-chip-spotlight:hover .chip{ border-color: color-mix(in srgb, var(--accent-2) 60%, var(--line-strong)); }.he-card-chip-spotlight:hover .chip:hover{ border-color: color-mix(in srgb, var(--accent) 45%, var(--line-strong)); }
+@media (hover: hover) and (pointer: fine){.he-card-chip-spotlight:hover .chip{
+  background: color-mix(in srgb, var(--accent-soft) 65%, var(--surface-2));
+  border-color: color-mix(in srgb, var(--accent) 38%, var(--line-strong));
+  color: color-mix(in srgb, var(--accent) 60%, var(--text-2));
+}
+  .he-card-chip-spotlight .chips:has(.chip:hover) .chip:not(:hover){
+    opacity: .5;
+    transform: scale(.96);
+  }
+  .he-card-chip-spotlight .chip:hover{
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 16px -8px color-mix(in srgb, var(--accent) 70%, transparent);
+  }
 }
 @media (prefers-reduced-motion: reduce){.he-card-chip-spotlight .chip{ transition: none; }
 }
@@ -82,7 +97,7 @@ export const cardChipSpotlight: HoverEffect = {
   id: "card-chip-spotlight",
   title: "Chip Spotlight",
   category: "cards",
-  description: "Individual chips brighten and tint with the accent on hover and focus.",
+  description: "The hovered chip fills with accent and lifts while the other chips dim, like a spotlight.",
   tags: ["card","chip","spotlight","hover"],
   animationType: "color",
   complexity: "simple",

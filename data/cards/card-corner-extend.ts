@@ -35,17 +35,35 @@ const css = `.he-card-corner-extend{
   border-radius: 12px;
   background: var(--accent-soft);
   color: var(--accent);
-}.he-card-corner-extend h2{ font-size: 1.15rem; margin-bottom: 8px; }.he-card-corner-extend .body-copy{ color: var(--text-2); font-size: .92rem; }.he-card-corner-extend .card-footer{ margin-top: 18px; }.he-card-corner-extend .corners{ position: absolute; inset: 0; pointer-events: none; }.he-card-corner-extend .corners i{ position: absolute; width: 22px; height: 22px; }.he-card-corner-extend .corners i::before, .he-card-corner-extend .corners i::after{
+}.he-card-corner-extend h2{ font-size: 1.15rem; margin-bottom: 8px; }.he-card-corner-extend .body-copy{ color: var(--text-2); font-size: .92rem; }.he-card-corner-extend .card-footer{ margin-top: 18px; }.he-card-corner-extend .corners{ position: absolute; inset: 0; pointer-events: none; }.he-card-corner-extend .corners i{
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  background: radial-gradient(farthest-side at var(--wash-x, 0%) var(--wash-y, 0%), color-mix(in srgb, var(--accent) 20%, transparent), transparent 72%);
+  opacity: 0;
+  transition: opacity .3s var(--ease);
+}.he-card-corner-extend .corners i::before, .he-card-corner-extend .corners i::after{
   content: "";
   position: absolute;
   background: var(--accent);
   border-radius: 2px;
   transition: transform .3s var(--ease);
   transition-delay: calc((1 - var(--on)) * var(--out, 0ms) + var(--on) * var(--in, 0ms));
-}.he-card-corner-extend .corners i::before{ width: 22px; height: 2px; transform: scaleX(calc(1 + var(--on) * (var(--grow) - 1))); }.he-card-corner-extend .corners i::after{ width: 2px; height: 22px; transform: scaleY(calc(1 + var(--on) * (var(--grow) - 1))); }.he-card-corner-extend .c-tl{ top: 12px; left: 12px; --in: 0ms;   --out: 270ms; }.he-card-corner-extend .c-tr{ top: 12px; right: 12px; --in: 90ms;  --out: 180ms; }.he-card-corner-extend .c-br{ bottom: 12px; right: 12px; --in: 180ms; --out: 90ms; }.he-card-corner-extend .c-bl{ bottom: 12px; left: 12px; --in: 270ms; --out: 0ms; }.he-card-corner-extend .c-tl::before{ transform-origin: left; }.he-card-corner-extend .c-tl::after{ transform-origin: top; }.he-card-corner-extend .c-tr::before{ transform-origin: right; }.he-card-corner-extend .c-tr::after{ transform-origin: top; }.he-card-corner-extend .c-br::before{ transform-origin: right; }.he-card-corner-extend .c-br::after{ transform-origin: bottom; }.he-card-corner-extend .c-bl::before{ transform-origin: left; }.he-card-corner-extend .c-bl::after{ transform-origin: bottom; }
+}.he-card-corner-extend .corners i::before{ width: 22px; height: 2px; transform: scaleX(calc(1 + var(--on) * (var(--grow) - 1))); }.he-card-corner-extend .corners i::after{ width: 2px; height: 22px; transform: scaleY(calc(1 + var(--on) * (var(--grow) - 1))); }
+/* Focus brackets: every corner is the same L, mirrored so the elbow faces the card corner and the arms run along the edges. */
+.he-card-corner-extend .c-tl{ top: 12px; left: 12px; --in: 0ms; --out: 270ms; --wash-x: 0%; --wash-y: 0%; }
+.he-card-corner-extend .c-tr{ top: 12px; right: 12px; --in: 90ms; --out: 180ms; --wash-x: 100%; --wash-y: 0%; }
+.he-card-corner-extend .c-br{ bottom: 12px; right: 12px; --in: 180ms; --out: 90ms; --wash-x: 100%; --wash-y: 100%; }
+.he-card-corner-extend .c-bl{ bottom: 12px; left: 12px; --in: 270ms; --out: 0ms; --wash-x: 0%; --wash-y: 100%; }
+.he-card-corner-extend .c-tl::before{ top: 0; left: 0; transform-origin: left; }.he-card-corner-extend .c-tl::after{ top: 0; left: 0; transform-origin: top; }
+.he-card-corner-extend .c-tr::before{ top: 0; right: 0; transform-origin: right; }.he-card-corner-extend .c-tr::after{ top: 0; right: 0; transform-origin: top; }
+.he-card-corner-extend .c-br::before{ bottom: 0; right: 0; transform-origin: right; }.he-card-corner-extend .c-br::after{ bottom: 0; right: 0; transform-origin: bottom; }
+.he-card-corner-extend .c-bl::before{ bottom: 0; left: 0; transform-origin: left; }.he-card-corner-extend .c-bl::after{ bottom: 0; left: 0; transform-origin: bottom; }
 @media (hover: hover) and (pointer: fine){.he-card-corner-extend:hover{ --on: 1; }
+  .he-card-corner-extend:hover .corners i{ opacity: 1; }
 }.he-card-corner-extend:focus-within{ --on: 1; }
-@media (prefers-reduced-motion: reduce){.he-card-corner-extend .corners i::before, .he-card-corner-extend .corners i::after{ transition: none; }
+.he-card-corner-extend:focus-within .corners i{ opacity: .9; }
+@media (prefers-reduced-motion: reduce){.he-card-corner-extend .corners i, .he-card-corner-extend .corners i::before, .he-card-corner-extend .corners i::after{ transition: none; }
 }
 
 /* --- uniform demo frame (shared by every card effect) --- */
