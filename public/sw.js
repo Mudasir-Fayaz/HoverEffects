@@ -11,8 +11,9 @@
  *    with bounded caches.
  *
  * Bump CACHE_VERSION whenever precached assets or the strategy change. The
- * worker waits for an explicit SKIP_WAITING message so an open page is never
- * broken by an in-place update; the UI shows an "Update available" affordance.
+ * worker waits until every client closes before a new version activates, so a
+ * deploy never breaks an open page; the next launch picks up the update
+ * automatically.
  */
 
 const CACHE_VERSION = "v2";

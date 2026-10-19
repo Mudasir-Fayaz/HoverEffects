@@ -117,7 +117,7 @@ export default function EffectCard({
             ${highlighted ? "border-[var(--site-accent-border)]" : ""}`}
       >
         {/* Header — title always visible, icons on hover (desktop) / always visible (mobile) */}
-        <div className="flex items-center justify-between gap-3 bg-[var(--site-surface-subtle)] px-3 py-2 text-[var(--site-text-muted)]">
+        <div className="flex items-center justify-between gap-3 bg-[var(--site-surface-subtle)] px-2 py-1 text-[var(--site-text-muted)]">
           <div className="min-w-0 flex-1">
             <h3 className="truncate text-sm font-semibold text-[var(--site-text)]">
               {effect.title}
@@ -221,14 +221,14 @@ export default function EffectCard({
           <div
             className="flex flex-col h-full w-full"
           >
-            <div className="flex shrink-0 items-center justify-between gap-3 border-b border-[var(--site-border)] bg-[var(--site-surface)] px-3 py-2 sm:px-4">
+            <div className="flex shrink-0 items-center justify-between gap-3 border-b border-[var(--site-border)] bg-[var(--site-surface)] px-2 py-1 sm:px-3">
               <h4 id={`${effect.id}-preview-title`} className="truncate text-sm font-semibold text-[var(--site-text)]">
                 {effect.title}
               </h4>
               <button
                 ref={previewCloseRef}
                 onClick={() => setIsPreviewOpen(false)}
-                className="inline-flex h-10 w-10 shrink-0 items-center justify-center text-[var(--site-text-subtle)] cursor-pointer transition-transform duration-150 hover:text-[var(--site-text)] active:scale-[0.97] focus-visible:outline-3 focus-visible:outline-[var(--site-focus)]"
+                className="inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center text-[var(--site-text-subtle)] transition-transform duration-150 hover:text-[var(--site-text)] active:scale-[0.97] focus-visible:outline-3 focus-visible:outline-[var(--site-focus)]"
                 aria-label={`Close preview for ${effect.title}`}
                 title={`Close preview for ${effect.title}`}
               >
@@ -237,8 +237,8 @@ export default function EffectCard({
             </div>
 
             {/* Dotted stage with the live effect inside a centered container. */}
-            <div className="site-dots flex flex-1 items-center justify-center overflow-auto bg-[var(--site-canvas)] px-4 py-6 [background-size:16px_16px] sm:px-8 sm:py-8">
-              <div className="flex w-full max-w-3xl items-center justify-center rounded-lg border border-[var(--site-border)] bg-white p-6 shadow-[0_10px_40px_var(--site-shadow)] sm:p-12">
+            <div className="site-dots flex flex-1 items-center justify-center overflow-auto bg-[var(--site-canvas)] [background-size:16px_16px]">
+              <div className="flex h-[60%] w-[60%] items-center justify-center rounded-lg border border-[var(--site-border)] bg-white p-4 shadow-[0_10px_40px_var(--site-shadow)] sm:p-8">
                 <TouchPreviewWrapper>
                   <EffectPreview effect={effect} />
                 </TouchPreviewWrapper>

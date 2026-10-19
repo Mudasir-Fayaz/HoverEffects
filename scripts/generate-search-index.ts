@@ -74,7 +74,7 @@ export const catalogTotal = ${effects.length};
 `;
 
   await writeFile(OUT, content, "utf-8");
-  console.log(`✓ Wrote ${OUT} (${entries.length} entries)`);
+  console.log(`[ok] Wrote ${OUT} (${entries.length} entries)`);
 }
 
 main().catch((error) => {

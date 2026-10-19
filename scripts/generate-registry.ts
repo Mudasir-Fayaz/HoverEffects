@@ -38,7 +38,7 @@ function extractDeps(reactCode: string, explicitDeps?: string[]): string[] {
     ) {
       continue;
     }
-    // Scoped package â€” take the first two segments, else first segment
+    // Scoped package — take the first two segments, else first segment
     const name = pkg.startsWith("@")
       ? pkg.split("/").slice(0, 2).join("/")
       : pkg.split("/")[0];
@@ -187,7 +187,7 @@ function buildIndex(items: RegistryItem[]): RegistryIndex {
     version: "1.0.0",
     name: "hovereffects",
     description:
-      "Premium hover interaction components â€” copy-ready React & HTML.",
+      "Premium hover interaction components — copy-ready React & HTML.",
     homepage: SITE_URL,
     categories,
     items: items.map((item) => ({
@@ -221,7 +221,7 @@ async function writeJson(path: string, data: unknown): Promise<void> {
 // ---------------------------------------------------------------------------
 
 async function main(): Promise<void> {
-  console.log("âš™  Generating registry...\n");
+  console.log("Generating registry...\n");
 
 const expectedCounts = new Map([
     ["buttons", 83],
@@ -313,7 +313,7 @@ const expectedCounts = new Map([
     const categoryDir = join(OUT_DIR, effect.category);
     await ensureDir(categoryDir);
     await writeJson(join(categoryDir, `${slug}.json`), item);
-    console.log(`  âœ“  ${effect.category}/${slug}.json`);
+    console.log(`  [ok] ${effect.category}/${slug}.json`);
   }
 
   // Write category-level index files
@@ -339,22 +339,22 @@ const expectedCounts = new Map([
       })),
     };
     await writeJson(join(OUT_DIR, cat, "index.json"), catIndex);
-    console.log(`  âœ“  ${cat}/index.json`);
+    console.log(`  [ok] ${cat}/index.json`);
   }
 
   // Write global registry index
   const index = buildIndex(builtItems);
   await writeJson(join(OUT_DIR, "registry.json"), index);
-  console.log(`  âœ“  registry.json`);
+  console.log(`  [ok] registry.json`);
 
   // Report errors
   if (errors.length > 0) {
-    console.error("\nâš   Registry generation warnings:");
-    for (const e of errors) console.error(`  âœ—  ${e}`);
+    console.error("\nRegistry generation warnings:");
+    for (const e of errors) console.error(`  [warn] ${e}`);
   }
 
   console.log(
-    `\nâœ…  Generated ${builtItems.length} registry items â†’ public/r/\n`
+    `\n[ok] Generated ${builtItems.length} registry items -> public/r/\n`
   );
 }
 

@@ -86,11 +86,13 @@ export function buildStandaloneHtml(
     }
     .preview-surface {
       display: flex;
+      flex: none;
       align-items: center;
       justify-content: center;
-      min-height: 320px;
-      width: 100%;
-      padding: clamp(48px, 8vw, 96px);
+      width: 60%;
+      height: 60%;
+      padding: clamp(16px, 3vw, 32px);
+      overflow: auto;
       background: #ffffff;
       border: 1px solid #f0f0f0;
     }
