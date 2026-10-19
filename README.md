@@ -248,12 +248,12 @@ from the example:
 ```bash
 cp wrangler.example.jsonc wrangler.jsonc
 # fill in your KV namespace id, then:
-bun run build:vinext
 bun run deploy:vinext
 ```
 
-`public/r/**`, PWA assets, and demo images are copied to the Worker's static
-assets automatically by the build.
+`deploy:vinext` runs the production build first, then deploys it (`bun run
+deploy` is an alias). `public/r/**`, PWA assets, and demo images are copied to
+the Worker's static assets automatically by the build.
 
 ## Tests
 

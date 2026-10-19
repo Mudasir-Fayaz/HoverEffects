@@ -21,7 +21,8 @@
     "prebuild:vinext": "bun run generate",
     "build:vinext": "vinext build",
     "start:vinext": "wrangler dev --config dist/server/wrangler.json",
-    "deploy:vinext": "node scripts/ensure-wrangler-bin.mjs && vinext-cloudflare deploy --config dist/server/wrangler.json"
+    "deploy": "bun run deploy:vinext",
+    "deploy:vinext": "bun run build:vinext && node scripts/ensure-wrangler-bin.mjs && vinext-cloudflare deploy --config dist/server/wrangler.json"
   },
   "dependencies": {
     "@tabler/icons-react": "^3.48.0",
