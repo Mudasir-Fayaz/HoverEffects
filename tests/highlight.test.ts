@@ -83,9 +83,14 @@ describe("effect source transforms", () => {
     expect(html).toContain("mudasir.in");
   });
 
-  test("standalone HTML uses the same 60% preview surface as the maximized panel", () => {
+  test("standalone HTML uses the same responsive preview surface as the maximized panel", () => {
     const html = buildStandaloneHtml(effects[0]);
     expect(html).toContain(".preview-surface");
+    expect(html).toContain("width: 85%;");
+    expect(html).toContain("height: 85%;");
+    expect(html).toContain("@media (min-width: 768px)");
+    expect(html).toContain("width: 75%;");
+    expect(html).toContain("@media (min-width: 1024px)");
     expect(html).toContain("width: 60%;");
     expect(html).toContain("height: 60%;");
   });

@@ -238,7 +238,7 @@ export default function EffectCard({
 
             {/* Dotted stage with the live effect inside a centered container. */}
             <div className="site-dots flex flex-1 items-center justify-center overflow-auto bg-[var(--site-canvas)] [background-size:16px_16px]">
-              <div className="flex h-[60%] w-[60%] items-center justify-center rounded-lg border border-[var(--site-border)] bg-white p-4 shadow-[0_10px_40px_var(--site-shadow)] sm:p-8">
+              <div className="flex h-[85%] w-[85%] items-center justify-center rounded-lg border border-[var(--site-border)] bg-white p-4 shadow-[0_10px_40px_var(--site-shadow)] sm:p-8 md:h-[75%] md:w-[75%] lg:h-[60%] lg:w-[60%]">
                 <TouchPreviewWrapper>
                   <EffectPreview effect={effect} />
                 </TouchPreviewWrapper>
