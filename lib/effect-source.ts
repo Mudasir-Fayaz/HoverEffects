@@ -89,12 +89,18 @@ export function buildStandaloneHtml(
       flex: none;
       align-items: center;
       justify-content: center;
-      width: 60%;
-      height: 60%;
+      width: 85%;
+      height: 85%;
       padding: clamp(16px, 3vw, 32px);
       overflow: auto;
       background: #ffffff;
       border: 1px solid #f0f0f0;
+    }
+    @media (min-width: 768px) {
+      .preview-surface { width: 75%; height: 75%; }
+    }
+    @media (min-width: 1024px) {
+      .preview-surface { width: 60%; height: 60%; }
     }
     .credits {
       font-size: 12px;
