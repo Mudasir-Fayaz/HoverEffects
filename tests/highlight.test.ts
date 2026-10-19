@@ -82,4 +82,11 @@ describe("effect source transforms", () => {
     expect(html).toContain("Mudasir Fayaz");
     expect(html).toContain("mudasir.in");
   });
+
+  test("standalone HTML uses the same 60% preview surface as the maximized panel", () => {
+    const html = buildStandaloneHtml(effects[0]);
+    expect(html).toContain(".preview-surface");
+    expect(html).toContain("width: 60%;");
+    expect(html).toContain("height: 60%;");
+  });
 });

@@ -9,81 +9,98 @@ interface BeforeInstallPromptEvent extends Event {
 
 const DISMISS_KEY = "hovereffects.install-dismissed";
 
+function isInstalledApp(): boolean {
+  if (typeof window === "undefined") return false;
+  const navigatorWithStandalone = window.navigator as Navigator & {
+    standalone?: boolean;
+  };
+  return (
+    window.matchMedia("(display-mode: standalone)").matches ||
+    navigatorWithStandalone.standalone === true
+  );
+}
+
 export default function PwaRegistration() {
   const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(null);
-  const [updateReady, setUpdateReady] = useState(false);
-  const [dismissed, setDismissed] = useState(true);
+  const [dismissed, setDismissed] = useState(() => {
+    if (typeof window === "undefined") return true;
+    try {
+      return window.localStorage.getItem(DISMISS_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
+  const [installed, setInstalled] = useState(isInstalledApp);
 
   useEffect(() => {
-    if (!("serviceWorker" in navigator)) return;
+    let updateTimer: number | undefined;
+    let checkForUpdate: (() => void) | undefined;
 
-    let registration: ServiceWorkerRegistration | undefined;
-    let reloading = false;
-
-    const register = async () => {
-      try {
-        registration = await navigator.serviceWorker.register("/sw.js", {
-          scope: "/",
-          updateViaCache: "none",
-        });
-
-        if (registration.waiting) setUpdateReady(true);
-
-        registration.addEventListener("updatefound", () => {
-          const installing = registration?.installing;
-          installing?.addEventListener("statechange", () => {
-            if (installing.state === "installed" && navigator.serviceWorker.controller) {
-              setUpdateReady(true);
-            }
+    if ("serviceWorker" in navigator) {
+      const register = async () => {
+        try {
+          const registration = await navigator.serviceWorker.register("/sw.js", {
+            scope: "/",
+            updateViaCache: "none",
           });
-        });
 
-        const checkForUpdate = () => {
-          if (document.visibilityState === "visible") registration?.update().catch(() => {});
-        };
-        window.addEventListener("visibilitychange", checkForUpdate);
-        window.setInterval(checkForUpdate, 60 * 60 * 1000);
-      } catch {
-        // PWA support is an enhancement and must never block the app.
-      }
-    };
+          checkForUpdate = () => {
+            if (document.visibilityState === "visible") {
+              registration.update().catch(() => {});
+            }
+          };
+          window.addEventListener("visibilitychange", checkForUpdate);
+          updateTimer = window.setInterval(checkForUpdate, 60 * 60 * 1000);
+        } catch {
+          // PWA support is an enhancement and must never block the app.
+        }
+      };
 
-    const onControllerChange = () => {
-      if (reloading) return;
-      reloading = true;
-      window.location.reload();
-    };
-
-    if (document.readyState === "complete") register();
-    else window.addEventListener("load", register, { once: true });
-
-    navigator.serviceWorker.addEventListener("controllerchange", onControllerChange);
+      if (document.readyState === "complete") register();
+      else window.addEventListener("load", register, { once: true });
+    }
 
     const onBeforeInstall = (event: Event) => {
       event.preventDefault();
-      setInstallEvent(event as BeforeInstallPromptEvent);
-      try {
-        setDismissed(window.localStorage.getItem(DISMISS_KEY) === "1");
-      } catch {
-        setDismissed(false);
+      if (isInstalledApp()) {
+        setInstalled(true);
+        return;
       }
+      setInstallEvent(event as BeforeInstallPromptEvent);
     };
-    const onInstalled = () => setInstallEvent(null);
+
+    const onInstalled = () => {
+      setInstalled(true);
+      setInstallEvent(null);
+    };
+
+    const displayMode = window.matchMedia("(display-mode: standalone)");
+    const onDisplayModeChange = () => setInstalled(isInstalledApp());
+
     window.addEventListener("beforeinstallprompt", onBeforeInstall);
     window.addEventListener("appinstalled", onInstalled);
+    displayMode.addEventListener?.("change", onDisplayModeChange);
 
     return () => {
       window.removeEventListener("beforeinstallprompt", onBeforeInstall);
       window.removeEventListener("appinstalled", onInstalled);
-      navigator.serviceWorker.removeEventListener("controllerchange", onControllerChange);
+      displayMode.removeEventListener?.("change", onDisplayModeChange);
+      if (checkForUpdate) window.removeEventListener("visibilitychange", checkForUpdate);
+      if (updateTimer) window.clearInterval(updateTimer);
     };
   }, []);
 
   const install = async () => {
     if (!installEvent) return;
-    await installEvent.prompt();
-    await installEvent.userChoice;
+    const promptEvent = installEvent;
     setInstallEvent(null);
+    try {
+      await promptEvent.prompt();
+      const choice = await promptEvent.userChoice;
+      if (choice.outcome === "accepted") setInstalled(true);
+    } catch {
+      // The prompt can be cancelled by the browser; keep the CTA hidden.
+    }
   };
 
   const dismissInstall = () => {
@@ -95,57 +112,30 @@ export default function PwaRegistration() {
     }
   };
 
-  const applyUpdate = () => {
-    navigator.serviceWorker.controller?.postMessage({ type: "SKIP_WAITING" });
-    setUpdateReady(false);
-  };
+  if (installed || !installEvent || dismissed) return null;
 
-  if (updateReady) {
-    return (
-      <div
-        role="status"
-        className="fixed bottom-3 left-1/2 z-100 flex max-w-[calc(100vw-1.5rem)] -translate-x-1/2 items-center gap-2 border border-[var(--site-border)] bg-[var(--site-surface-raised)] px-2.5 py-1.5 text-xs shadow-[0_18px_50px_var(--site-shadow)]"
+  return (
+    <div
+      role="status"
+      className="fixed bottom-3 left-1/2 z-100 flex max-w-[calc(100vw-1.5rem)] -translate-x-1/2 items-center gap-2 border border-[var(--site-border)] bg-[var(--site-surface-raised)] px-2.5 py-1.5 text-xs shadow-[0_18px_50px_var(--site-shadow)]"
+    >
+      <span className="min-w-0 truncate whitespace-nowrap text-[var(--site-text)]">
+        Install HoverEffects
+      </span>
+      <button
+        type="button"
+        onClick={install}
+        className="inline-flex h-7 shrink-0 cursor-pointer items-center bg-[var(--site-accent)] px-2.5 text-[11px] font-semibold text-[var(--site-accent-foreground)] transition-transform duration-150 active:scale-[0.97]"
       >
-        <span className="min-w-0 truncate whitespace-nowrap text-[var(--site-text)]">
-          A new version is available.
-        </span>
-        <button
-          type="button"
-          onClick={applyUpdate}
-          className="inline-flex h-7 shrink-0 items-center bg-[var(--site-accent)] px-2.5 text-[11px] font-semibold text-[var(--site-accent-foreground)] transition-transform duration-150 active:scale-[0.97]"
-        >
-          Reload
-        </button>
-      </div>
-    );
-  }
-
-  if (installEvent && !dismissed) {
-    return (
-      <div
-        role="status"
-        className="fixed bottom-3 left-1/2 z-100 flex max-w-[calc(100vw-1.5rem)] -translate-x-1/2 items-center gap-2 border border-[var(--site-border)] bg-[var(--site-surface-raised)] px-2.5 py-1.5 text-xs shadow-[0_18px_50px_var(--site-shadow)]"
+        Install
+      </button>
+      <button
+        type="button"
+        onClick={dismissInstall}
+        className="inline-flex h-7 shrink-0 cursor-pointer items-center px-1.5 text-[11px] font-medium text-[var(--site-text-muted)] transition-colors duration-150 hover:text-[var(--site-text)]"
       >
-        <span className="min-w-0 truncate whitespace-nowrap text-[var(--site-text)]">
-          Install HoverEffects
-        </span>
-        <button
-          type="button"
-          onClick={install}
-          className="inline-flex h-7 shrink-0 items-center bg-[var(--site-accent)] px-2.5 text-[11px] font-semibold text-[var(--site-accent-foreground)] transition-transform duration-150 active:scale-[0.97]"
-        >
-          Install
-        </button>
-        <button
-          type="button"
-          onClick={dismissInstall}
-          className="inline-flex h-7 shrink-0 items-center px-1.5 text-[11px] font-medium text-[var(--site-text-muted)] transition-colors duration-150 hover:text-[var(--site-text)]"
-        >
-          Not now
-        </button>
-      </div>
-    );
-  }
-
-  return null;
+        Not now
+      </button>
+    </div>
+  );
 }

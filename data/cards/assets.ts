@@ -1,6 +1,6 @@
 /**
  * Local card demo artwork (original SVG illustrations) inlined as data URIs so
- * copied React/HTML snippets stay fully self-contained â€” no site-only asset
+ * copied React/HTML snippets stay fully self-contained — no site-only asset
  * paths are ever embedded in a demo or its snippet code.
  */
 

@@ -232,7 +232,8 @@ copy/download always use the raw source string.
 
 `app/manifest.ts`, `public/sw.js`, `public/offline.html`, and
 `components/PwaRegistration.tsx` provide an installable app with a
-network-first navigation cache, an offline fallback, and an update prompt.
+network-first navigation cache, an offline fallback, and silent background
+updates. The install CTA only appears when the app is not already installed.
 Icons live in `public/icons/`.
 
 ## Deployment

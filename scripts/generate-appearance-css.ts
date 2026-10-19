@@ -67,7 +67,7 @@ async function main() {
   }
 
   await writeFile(OUT, `${parts.join("\n")}\n`, "utf-8");
-  console.log(`✓ Wrote ${OUT}`);
+  console.log(`[ok] Wrote ${OUT}`);
 }
 
 main().catch((error) => {
